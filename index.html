@@ -320,6 +320,86 @@
     </div>
   </section>
 
+  <section id="clock">
+    <div class="container">
+
+      <h2>Clock / Oscillator</h2>
+      <p class="section-sub">A single NOR gate looped through a delay — generates a repeating pulse with no external input.</p>
+
+      <div class="concept">
+        <p>Feed the output of a NOR gate back into one of its own inputs through a <strong>delay block</strong>. Tie the second input permanently to <code>0</code> so the gate acts as a NOT. The delay stops the feedback from resolving instantly — giving the output time to flip before the new value arrives back, which flips it again, and so on forever.</p>
+        <ul class="bullet-list">
+          <li><b>Gate rule:</b> NOR(0, signal) = NOT(signal) — output is always the inverse of the feedback input</li>
+          <li><b>Delay role:</b> breaks the instantaneous loop — the output holds for one delay tick before the feedback catches up</li>
+          <li><b>Result:</b> CLK toggles 0→1→0→1 automatically, no lever needed</li>
+          <li><b>Speed:</b> shorter delay = faster clock; longer delay = slower clock</li>
+        </ul>
+      </div>
+
+      <div class="ha-layout">
+
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg ha-svg" viewBox="0 0 360 125" aria-label="Clock oscillator circuit diagram">
+
+            <!-- NOR gate box -->
+            <rect x="145" y="38" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="173" y="56" class="gate-box-lbl">NOR</text>
+
+            <!-- Tied-0 top input (dashed = constant 0) -->
+            <line x1="0" y1="45" x2="145" y2="45" stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="3" y="41" class="wire-lbl">0</text>
+            <text x="3" y="55" class="wire-lbl muted-lbl">always off</text>
+
+            <!-- Output wire → CLK label -->
+            <line x1="201" y1="52" x2="360" y2="52" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="205" y="47" class="wire-lbl accent-lbl">CLK</text>
+
+            <!-- Feedback tap dot on output wire -->
+            <circle cx="255" cy="52" r="2.5" fill="#555"/>
+
+            <!-- Feedback path: down from tap -->
+            <line x1="255" y1="52" x2="255" y2="105" stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- Feedback path: right segment before DELAY box -->
+            <line x1="255" y1="105" x2="201" y2="105" stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- DELAY block inline on feedback wire -->
+            <rect x="140" y="97" width="61" height="16" rx="2" fill="#1c1c1c" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="170" y="108" class="gate-box-lbl">DELAY</text>
+
+            <!-- Feedback path: left segment after DELAY box -->
+            <line x1="140" y1="105" x2="70" y2="105" stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- Feedback path: up to NOR bot input -->
+            <line x1="70" y1="59" x2="70" y2="105" stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- Feedback path: right into NOR bot input -->
+            <line x1="70" y1="59" x2="145" y2="59" stroke="#3d3d3d" stroke-width="1.5"/>
+
+          </svg>
+        </div>
+
+        <div class="ha-right">
+          <p class="diagram-label">Live Simulation</p>
+          <div class="clock-demo">
+            <div class="clock-display-row">
+              <span class="clock-label">CLK</span>
+              <span id="clk-out" class="try-val o0 clock-out">0</span>
+            </div>
+            <div class="clock-wave" id="clk-wave" aria-hidden="true"></div>
+            <div class="gate-try ha-try">
+              <button class="try-btn" id="clk-toggle">▶ Start</button>
+              <span class="clock-hz-label">≈ 2 Hz</span>
+            </div>
+          </div>
+          <p class="clock-note">Each tick: <code>NOR(0, prev) = NOT(prev)</code></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <section id="half-adder">
     <div class="container">
 
@@ -410,28 +490,85 @@
         <p>Each output is an AND gate wired to the right mix of A, B, and their inverses. The inverses come from <code>NOR(x, 0)</code> — BaBFT's only way to invert.</p>
       </div>
 
-      <div class="build-box">
-        <div class="parts-list">
-          <p class="diagram-label">Parts needed</p>
-          <div class="parts">
-            <div class="part"><span class="part-qty">2</span> Levers — inputs A and B</div>
-            <div class="part"><span class="part-qty">2</span> NOR gates — one for NOT A, one for NOT B</div>
-            <div class="part"><span class="part-qty">4</span> AND gates — one per output line</div>
-          </div>
-        </div>
+      <div class="dec-diagram">
+        <p class="diagram-label">Circuit</p>
+        <svg class="circuit-svg dec-svg" viewBox="0 0 490 210" aria-label="2-to-4 decoder circuit diagram">
 
-        <div class="build-steps-wrap">
-          <p class="diagram-label">How to wire it</p>
-          <ol class="build-steps">
-            <li>Place <b>lever A</b> and <b>lever B</b>. These are your address inputs.</li>
-            <li>Place a <b>NOR gate</b>. Connect <b>lever A → input 1</b>. Leave input 2 disconnected (disconnected = 0 in BaBFT). The output is <b>NOT A</b>.</li>
-            <li>Place another <b>NOR gate</b>. Connect <b>lever B → input 1</b>. Leave input 2 disconnected. Output is <b>NOT B</b>.</li>
-            <li>Place an <b>AND gate</b> for <b>Out 0</b>. Wire <b>NOT A → input 1</b>, <b>NOT B → input 2</b>. Active only when both levers are off.</li>
-            <li>Place an <b>AND gate</b> for <b>Out 1</b>. Wire <b>NOT A → input 1</b>, <b>lever B → input 2</b>. Active only when A=off, B=on.</li>
-            <li>Place an <b>AND gate</b> for <b>Out 2</b>. Wire <b>lever A → input 1</b>, <b>NOT B → input 2</b>. Active only when A=on, B=off.</li>
-            <li>Place an <b>AND gate</b> for <b>Out 3</b>. Wire <b>lever A → input 1</b>, <b>lever B → input 2</b>. Active only when both levers are on.</li>
-          </ol>
-        </div>
+          <!-- NOR gate boxes (inverters) -->
+          <rect x="110" y="35"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="138" y="53"  class="gate-box-lbl">NOR</text>
+          <rect x="110" y="125" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="138" y="143" class="gate-box-lbl">NOR</text>
+
+          <!-- AND gate boxes -->
+          <rect x="310" y="8"   width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="338" y="26"  class="gate-box-lbl">AND</text>
+          <rect x="310" y="63"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="338" y="81"  class="gate-box-lbl">AND</text>
+          <rect x="310" y="118" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="338" y="136" class="gate-box-lbl">AND</text>
+          <rect x="310" y="173" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="338" y="191" class="gate-box-lbl">AND</text>
+
+          <!-- A input: enters at y=42, splits to NOR_A top-in + AND_2 top-in + AND_3 top-in -->
+          <line x1="0"  y1="42" x2="110" y2="42" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="25" y1="42" x2="25"  y2="180" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="25" y1="125" x2="310" y2="125" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="25" y1="180" x2="310" y2="180" stroke="#3d3d3d" stroke-width="1.5"/>
+          <circle cx="25" cy="42"  r="2.5" fill="#555"/>
+          <circle cx="25" cy="125" r="2.5" fill="#555"/>
+          <text x="2" y="39" class="wire-lbl">A</text>
+
+          <!-- B input: enters at y=132, splits to NOR_B top-in + AND_1 bot-in + AND_3 bot-in -->
+          <line x1="0"  y1="132" x2="110" y2="132" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="45" y1="84"  x2="45"  y2="194" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="45" y1="84"  x2="310" y2="84"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="45" y1="194" x2="310" y2="194" stroke="#3d3d3d" stroke-width="1.5"/>
+          <circle cx="45" cy="132" r="2.5" fill="#555"/>
+          <circle cx="45" cy="84"  r="2.5" fill="#555"/>
+          <text x="2" y="129" class="wire-lbl">B</text>
+
+          <!-- NOR_A grounded input (0 = disconnected) -->
+          <line x1="88" y1="56" x2="110" y2="56" stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <text x="78" y="60" class="wire-lbl muted-lbl">0</text>
+
+          <!-- NOR_B grounded input (0 = disconnected) -->
+          <line x1="88" y1="146" x2="110" y2="146" stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <text x="78" y="150" class="wire-lbl muted-lbl">0</text>
+
+          <!-- NOT A label on NOR_A output -->
+          <text x="168" y="44" class="wire-lbl" fill="#777">NOT A</text>
+
+          <!-- NOT B label on NOR_B output -->
+          <text x="168" y="134" class="wire-lbl" fill="#777">NOT B</text>
+
+          <!-- NOT_A bus: NOR_A output(166,49) → AND_0 top-in(310,15) + AND_1 top-in(310,70) -->
+          <line x1="166" y1="49" x2="220" y2="49"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="220" y1="15" x2="220" y2="70"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="220" y1="15" x2="310" y2="15"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="220" y1="70" x2="310" y2="70"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <circle cx="220" cy="49" r="2.5" fill="#555"/>
+
+          <!-- NOT_B bus: NOR_B output(166,139) straight to AND_2 bot-in(310,139),
+               junction at x=190 branches up to AND_0 bot-in(310,29) -->
+          <line x1="166" y1="139" x2="310" y2="139" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="190" y1="29"  x2="190" y2="139" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="190" y1="29"  x2="310" y2="29"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <circle cx="190" cy="139" r="2.5" fill="#555"/>
+
+          <!-- Output wires -->
+          <line x1="366" y1="22"  x2="490" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="366" y1="77"  x2="490" y2="77"  stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="366" y1="132" x2="490" y2="132" stroke="#3d3d3d" stroke-width="1.5"/>
+          <line x1="366" y1="187" x2="490" y2="187" stroke="#3d3d3d" stroke-width="1.5"/>
+
+          <!-- Output labels -->
+          <text x="370" y="17"  class="wire-lbl accent-lbl">Out 0 — A=0, B=0</text>
+          <text x="370" y="72"  class="wire-lbl accent-lbl">Out 1 — A=0, B=1</text>
+          <text x="370" y="127" class="wire-lbl accent-lbl">Out 2 — A=1, B=0</text>
+          <text x="370" y="182" class="wire-lbl accent-lbl">Out 3 — A=1, B=1</text>
+
+        </svg>
       </div>
 
       <div class="dec-demo">
@@ -463,6 +600,502 @@
         <p>A full 2-to-4 decoder costs <b>2 NOR gates</b> (inverters) + <b>4 AND gates</b> = 6 gates total. To address 30 pixels you need a 5-bit decoder — 5 NOR gates for the inverters, then up to 32 AND chains (one per address), each AND chain being 4 two-input AND gates deep. That's around 130 gates just for the address logic.</p>
       </div>
 
+    </div>
+  </section>
+
+  <section id="sr-latch">
+    <div class="container">
+
+      <h2>SR Latch</h2>
+      <p class="section-sub">Two cross-coupled NOR gates — gives your circuit memory.</p>
+
+      <div class="concept">
+        <p>An SR latch stores one bit of state. The output <b>Q</b> stays 1 or 0 even after you remove the input signal — it remembers. In BaBFT this means a door that stays open after a button press, a trap that arms once and waits, or any mechanism that needs to "latch on."</p>
+        <ul class="bullet-list">
+          <li><b>S = 1, R = 0</b> — Set: Q goes to 1 and stays there</li>
+          <li><b>S = 0, R = 1</b> — Reset: Q goes to 0 and stays there</li>
+          <li><b>S = 0, R = 0</b> — Hold: Q keeps whatever it was last</li>
+          <li><b>S = 1, R = 1</b> — Invalid: avoid this, both outputs fight</li>
+        </ul>
+      </div>
+
+      <div class="ha-layout">
+
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg ha-svg" viewBox="0 0 370 155" aria-label="SR latch circuit diagram">
+
+            <!-- Gate 1 (top NOR) -->
+            <rect x="130" y="18" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="158" y="36" class="gate-box-lbl">NOR</text>
+
+            <!-- Gate 2 (bottom NOR) -->
+            <rect x="130" y="98" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="158" y="116" class="gate-box-lbl">NOR</text>
+
+            <!-- S input -->
+            <line x1="0" y1="25" x2="130" y2="25" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="2" y="22" class="wire-lbl">S</text>
+
+            <!-- R input -->
+            <line x1="0" y1="105" x2="130" y2="105" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="2" y="102" class="wire-lbl">R</text>
+
+            <!-- Q̄ feedback: Gate 2 output → up and left → Gate 1 bot-input -->
+            <line x1="186" y1="112" x2="240" y2="112" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="240" y1="39"  x2="240" y2="112" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="130" y1="39"  x2="240" y2="39"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="240" cy="112" r="2.5" fill="#555"/>
+            <text x="188" y="108" class="wire-lbl muted-lbl"><tspan text-decoration="overline">Q</tspan></text>
+
+            <!-- Q output + feedback: Gate 1 output → output wire + down → Gate 2 bot-input -->
+            <line x1="186" y1="32"  x2="370" y2="32"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="255" y1="32"  x2="255" y2="119" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="130" y1="119" x2="255" y2="119" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="255" cy="32" r="2.5" fill="#555"/>
+            <text x="260" y="27" class="wire-lbl accent-lbl">Q</text>
+
+          </svg>
+        </div>
+
+        <div class="ha-right">
+          <p class="diagram-label">Behaviour</p>
+          <table class="truth-table">
+            <thead><tr><th>S</th><th>R</th><th>Q</th><th>State</th></tr></thead>
+            <tbody>
+              <tr data-sr="00"><td>0</td><td>0</td><td class="o">—</td><td class="sr-state">Hold</td></tr>
+              <tr data-sr="10"><td>1</td><td>0</td><td class="o o1">1</td><td class="sr-state">Set</td></tr>
+              <tr data-sr="01"><td>0</td><td>1</td><td class="o o0">0</td><td class="sr-state">Reset</td></tr>
+              <tr data-sr="11"><td>1</td><td>1</td><td class="o sr-invalid-cell">⚠</td><td class="sr-state sr-invalid-cell">Invalid</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try ha-try">
+            <button class="try-btn" id="sr-btn-s">S = 0</button>
+            <button class="try-btn" id="sr-btn-r">R = 0</button>
+            <span class="try-out">
+              Q = <span id="sr-q" class="try-val o0">0</span>
+              <span id="sr-state-lbl" class="sr-demo-state">Hold</span>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+    <section id="d-latch">
+    <div class="container">
+      <h2>D Latch</h2>
+      <p class="section-sub">Adds an Enable gate to an SR latch &mdash; avoids the invalid state and controls when data is captured.</p>
+      <div class="concept">
+        <p>A D latch has one data input <b>D</b> and one enable input <b>E</b>. While E is 1 the output Q follows D (transparent). When E drops to 0 Q freezes &mdash; it holds whatever D was at that moment.</p>
+        <ul class="bullet-list">
+          <li><b>E = 1</b> &mdash; transparent: Q tracks D in real time</li>
+          <li><b>E = 0</b> &mdash; latched: Q holds its last value regardless of D</li>
+          <li><b>No invalid state</b> &mdash; S = AND(D,&nbsp;E) and R = AND(NOT&nbsp;D,&nbsp;E) are always opposite when E = 1</li>
+          <li><b>BaBFT cost:</b> 1 NOR (inverter) + 2 AND (steering) + 2 NOR (SR latch) = 5 gates</li>
+        </ul>
+      </div>
+      <div class="ha-layout">
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg ha-svg" viewBox="0 0 490 130" aria-label="D latch circuit diagram">
+
+            <!-- NOR gate (NOT D) — positioned left-centre, clear of all other wires -->
+            <rect x="40"  y="50" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="68"  y="68" class="gate-box-lbl">NOR</text>
+
+            <!-- AND gate S = AND(D, E) -->
+            <rect x="175" y="8"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="203" y="26" class="gate-box-lbl">AND</text>
+
+            <!-- AND gate R = AND(NOT D, E) -->
+            <rect x="175" y="92" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="203" y="110" class="gate-box-lbl">AND</text>
+
+            <!-- SR latch top NOR (outputs Q) -->
+            <rect x="325" y="8"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="353" y="26" class="gate-box-lbl">NOR</text>
+
+            <!-- SR latch bot NOR (outputs Q-bar) -->
+            <rect x="325" y="92" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="353" y="110" class="gate-box-lbl">NOR</text>
+
+            <!-- D wire: main runs along top (y=15) to AND_S; branch drops to NOR top-in at x=20 (left of NOR box) -->
+            <line x1="0"  y1="15" x2="175" y2="15" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="20" y1="15" x2="20"  y2="57" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="20" y1="57" x2="40"  y2="57" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="20" cy="15" r="2.5" fill="#555"/>
+            <text x="2" y="12" class="wire-lbl">D</text>
+
+            <!-- NOR grounded bot-in -->
+            <line x1="18" y1="71" x2="40"  y2="71" stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="8"  y="76" class="wire-lbl muted-lbl">0</text>
+
+            <!-- E wire: enters at y=80 (below NOR box), branches up to AND_S bot-in and down to AND_R bot-in -->
+            <line x1="0"  y1="80" x2="30"  y2="80"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="30" y1="29" x2="30"  y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="30" y1="29" x2="175" y2="29"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="30" y1="113" x2="175" y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="30" cy="80" r="2.5" fill="#555"/>
+            <text x="2" y="77" class="wire-lbl">E</text>
+
+            <!-- NOT D: NOR output to AND_R top-in (routes below NOR, clear of E wire) -->
+            <line x1="96"  y1="64" x2="135" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="135" y1="64" x2="135" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="135" y1="99" x2="175" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="98" y="60" class="wire-lbl" fill="#777">NOT D</text>
+
+            <!-- S: AND_S output to NOR1 top-in -->
+            <line x1="231" y1="22" x2="270" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="270" y1="15" x2="270" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="270" y1="15" x2="325" y2="15"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="233" y="18" class="wire-lbl" fill="#777">S</text>
+
+            <!-- R: AND_R output to NOR2 top-in -->
+            <line x1="231" y1="106" x2="270" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="270" y1="99"  x2="270" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="270" y1="99"  x2="325" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="233" y="102" class="wire-lbl" fill="#777">R</text>
+
+            <!-- Q-bar feedback: NOR2 output right, tap up to NOR1 bot-in -->
+            <line x1="381" y1="106" x2="490" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="415" y1="29"  x2="415" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="325" y1="29"  x2="415" y2="29"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="415" cy="106" r="2.5" fill="#555"/>
+            <text x="385" y="102" class="wire-lbl muted-lbl"><tspan text-decoration="overline">Q</tspan></text>
+
+            <!-- Q output + feedback: NOR1 output right, tap down to NOR2 bot-in -->
+            <line x1="381" y1="22"  x2="490" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="440" y1="22"  x2="440" y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="325" y1="113" x2="440" y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="440" cy="22" r="2.5" fill="#555"/>
+            <text x="444" y="17" class="wire-lbl accent-lbl">Q</text>
+
+          </svg>
+        </div>
+        <div class="ha-right">
+          <p class="diagram-label">Behaviour</p>
+          <table class="truth-table">
+            <thead><tr><th>E</th><th>D</th><th>Q</th><th>Q&#773;</th><th>Mode</th></tr></thead>
+            <tbody>
+              <tr data-dl="hold"><td>0</td><td class="muted-cell">&times;</td><td class="o">&mdash;</td><td class="o">&mdash;</td><td class="sr-state">Hold</td></tr>
+              <tr data-dl="01"><td>1</td><td>0</td><td class="o o0">0</td><td class="o o1">1</td><td class="sr-state">Reset</td></tr>
+              <tr data-dl="11"><td>1</td><td>1</td><td class="o o1">1</td><td class="o o0">0</td><td class="sr-state">Set</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try ha-try">
+            <button class="try-btn" id="dl-btn-e">E = 0</button>
+            <button class="try-btn" id="dl-btn-d">D = 0</button>
+            <span class="try-out">Q = <span id="dl-q" class="try-val o1">1</span> &nbsp; Q&#773; = <span id="dl-qb" class="try-val o0">0</span> &nbsp; <span id="dl-state-lbl" class="sr-demo-state">Hold</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="d-flip-flop">
+    <div class="container">
+      <h2>D Flip-Flop</h2>
+      <p class="section-sub">Edge-triggered: captures D only on the rising edge of CLK. Immune to glitches while the clock is stable.</p>
+      <div class="concept">
+        <p>A D flip-flop is two D latches in series &mdash; a <b>master</b> and a <b>slave</b>. The master opens when CLK&nbsp;=&nbsp;0; the slave opens when CLK&nbsp;=&nbsp;1. On the 0&rarr;1 edge the master closes (locking D) and the slave opens simultaneously (passing the locked value to Q). Q only ever changes at that single instant.</p>
+        <ul class="bullet-list">
+          <li><b>CLK = 0</b> &mdash; master transparent, slave latched: D can change freely, Q is frozen</li>
+          <li><b>CLK &uarr; (0&rarr;1)</b> &mdash; master closes, slave opens: Q captures D</li>
+          <li><b>CLK = 1</b> &mdash; master latched, slave transparent: D changes are blocked, Q holds</li>
+          <li><b>BaBFT cost:</b> 2 &times; D latch = 10 gates total</li>
+        </ul>
+      </div>
+      <div class="ha-layout">
+        <div>
+          <p class="diagram-label">Master-Slave Circuit</p>
+          <svg class="circuit-svg ha-svg" viewBox="0 0 490 115" aria-label="D flip-flop master-slave circuit diagram">
+            <rect x="22"  y="40" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="50"  y="58" class="gate-box-lbl">NOR</text>
+            <rect x="148" y="10" width="90" height="72" rx="3" fill="none" stroke="#3a3a3a" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="193" y="34" class="gate-box-lbl">MASTER</text>
+            <text x="193" y="50" class="gate-box-lbl">D LATCH</text>
+            <text x="193" y="68" class="wire-lbl muted-lbl">E = NOT CLK</text>
+            <rect x="335" y="10" width="90" height="72" rx="3" fill="none" stroke="#3a3a3a" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="380" y="34" class="gate-box-lbl">SLAVE</text>
+            <text x="380" y="50" class="gate-box-lbl">D LATCH</text>
+            <text x="380" y="68" class="wire-lbl muted-lbl">E = CLK</text>
+            <line x1="0"   y1="27" x2="148" y2="27"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="2" y="24" class="wire-lbl">D</text>
+            <line x1="0"   y1="47" x2="22"  y2="47"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="10"  y1="47" x2="10"  y2="92"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="10"  y1="92" x2="322" y2="92"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="322" y1="64" x2="322" y2="92"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="322" y1="64" x2="335" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="10" cy="47" r="2.5" fill="#555"/>
+            <text x="2" y="44" class="wire-lbl">CLK</text>
+            <line x1="4"   y1="61" x2="22"  y2="61"  stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="1"    y="66" class="wire-lbl muted-lbl">0</text>
+            <line x1="78"  y1="54" x2="118" y2="54"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="118" y1="54" x2="118" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="118" y1="64" x2="148" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="80" y="50" class="wire-lbl" fill="#777">NOT CLK</text>
+            <line x1="238" y1="42" x2="298" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="298" y1="27" x2="298" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="298" y1="27" x2="335" y2="27"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="425" y1="42" x2="490" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="430" y="37" class="wire-lbl accent-lbl">Q</text>
+          </svg>
+        </div>
+        <div class="ha-right">
+          <p class="diagram-label">Behaviour</p>
+          <table class="truth-table">
+            <thead><tr><th>CLK</th><th>D</th><th>Q</th><th>Mode</th></tr></thead>
+            <tbody>
+              <tr data-dff="r0"><td>&uarr;</td><td>0</td><td class="o o0">0</td><td class="sr-state">Capture</td></tr>
+              <tr data-dff="r1"><td>&uarr;</td><td>1</td><td class="o o1">1</td><td class="sr-state">Capture</td></tr>
+              <tr data-dff="hold"><td>0 / 1</td><td class="muted-cell">&times;</td><td class="o">&mdash;</td><td class="sr-state">Hold</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try ha-try">
+            <button class="try-btn" id="dff-btn-d">D = 0</button>
+            <button class="try-btn" id="dff-btn-clk">CLK = 0</button>
+            <span class="try-out">Q = <span id="dff-q" class="try-val o0">0</span> <span id="dff-state-lbl" class="sr-demo-state">Hold</span></span>
+          </div>
+          <p class="clock-note">Click <code>CLK</code> to toggle &mdash; Q only updates on the <b>0 &rarr; 1</b> transition.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mux">
+    <div class="container">
+
+      <h2>2-to-1 Multiplexer</h2>
+      <p class="section-sub">A selector bit chooses which of two signals reaches the output.</p>
+
+      <div class="concept">
+        <p>A MUX is a programmable signal switch. One lever (<b>Sel</b>) controls which source gets through — flip it one way and signal A passes, flip it the other way and signal B passes. The output wire stays the same; only the source changes.</p>
+        <ul class="bullet-list">
+          <li><b>Sel = 0</b> → Out = A (B is blocked)</li>
+          <li><b>Sel = 1</b> → Out = B (A is blocked)</li>
+          <li><b>4 gates total:</b> 1 NOR (inverts Sel) + 2 AND (one per path) + 1 OR (combines)</li>
+        </ul>
+      </div>
+
+      <div class="ha-layout">
+
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg mux-svg" viewBox="0 0 500 160" aria-label="2-to-1 multiplexer circuit diagram">
+
+            <!-- NOR gate (NOT Sel) -->
+            <rect x="110" y="70" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="138" y="88" class="gate-box-lbl">NOR</text>
+
+            <!-- AND gate 1: A AND NOT Sel -->
+            <rect x="255" y="21" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="283" y="39" class="gate-box-lbl">AND</text>
+
+            <!-- AND gate 2: B AND Sel -->
+            <rect x="255" y="111" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="283" y="129" class="gate-box-lbl">AND</text>
+
+            <!-- OR gate -->
+            <rect x="380" y="66" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="408" y="84" class="gate-box-lbl">OR</text>
+
+            <!-- A wire: straight to AND1 top-in (y=28) -->
+            <line x1="0"   y1="28"  x2="255" y2="28"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="2" y="25" class="wire-lbl">A</text>
+
+            <!-- B wire: straight to AND2 top-in (y=118) -->
+            <line x1="0"   y1="118" x2="255" y2="118" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="2" y="115" class="wire-lbl">B</text>
+
+            <!-- Sel wire: enters at y=77, junction at x=50 splits down to AND2 bot-in -->
+            <line x1="0"   y1="77"  x2="110" y2="77"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="50"  y1="77"  x2="50"  y2="132" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="50"  y1="132" x2="255" y2="132" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="50" cy="77" r="2.5" fill="#555"/>
+            <text x="2" y="74" class="wire-lbl">Sel</text>
+
+            <!-- NOR grounded input (0 = disconnected) -->
+            <line x1="90"  y1="91"  x2="110" y2="91"  stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="78" y="95" class="wire-lbl muted-lbl">0</text>
+
+            <!-- NOT Sel label near NOR output -->
+            <text x="168" y="72" class="wire-lbl" fill="#777">NOT Sel</text>
+
+            <!-- NOT Sel wire: NOR output(166,84) → right → up → AND1 bot-in(255,42) -->
+            <line x1="166" y1="84"  x2="220" y2="84"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="220" y1="42"  x2="220" y2="84"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="220" y1="42"  x2="255" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- AND1 output → right → down → OR top-in(380,73) -->
+            <line x1="311" y1="35"  x2="345" y2="35"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="345" y1="35"  x2="345" y2="73"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="345" y1="73"  x2="380" y2="73"  stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- AND2 output → right → up → OR bot-in(380,87) -->
+            <line x1="311" y1="125" x2="345" y2="125" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="345" y1="87"  x2="345" y2="125" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="345" y1="87"  x2="380" y2="87"  stroke="#3d3d3d" stroke-width="1.5"/>
+
+            <!-- OR output = Out -->
+            <line x1="436" y1="80"  x2="500" y2="80"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="440" y="75" class="wire-lbl accent-lbl">Out</text>
+
+          </svg>
+        </div>
+
+        <div class="ha-right">
+          <p class="diagram-label">Truth table</p>
+          <table class="truth-table">
+            <thead><tr><th>Sel</th><th>A</th><th>B</th><th>Out</th></tr></thead>
+            <tbody>
+              <tr data-mux="000"><td>0</td><td>0</td><td>0</td><td class="o o0">0</td></tr>
+              <tr data-mux="001"><td>0</td><td>0</td><td>1</td><td class="o o0">0</td></tr>
+              <tr data-mux="010"><td>0</td><td>1</td><td>0</td><td class="o o1">1</td></tr>
+              <tr data-mux="011"><td>0</td><td>1</td><td>1</td><td class="o o1">1</td></tr>
+              <tr data-mux="100"><td>1</td><td>0</td><td>0</td><td class="o o0">0</td></tr>
+              <tr data-mux="101"><td>1</td><td>0</td><td>1</td><td class="o o1">1</td></tr>
+              <tr data-mux="110"><td>1</td><td>1</td><td>0</td><td class="o o0">0</td></tr>
+              <tr data-mux="111"><td>1</td><td>1</td><td>1</td><td class="o o1">1</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try ha-try mux-try">
+            <button class="try-btn" id="mux-btn-a">A = 0</button>
+            <button class="try-btn" id="mux-btn-b">B = 0</button>
+            <button class="try-btn" id="mux-btn-sel">Sel = 0</button>
+            <span class="try-out">Out = <span id="mux-out" class="try-val o0">0</span></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="full-adder">
+    <div class="container">
+
+      <h2>Full Adder</h2>
+      <p class="section-sub">Adds two bits plus a carry-in — chain these to build multi-bit addition.</p>
+
+      <div class="concept">
+        <p>A full adder is two half adders wired together with an OR gate. The carry-in lets you chain stages — the carry-out of one full adder feeds the carry-in of the next.</p>
+        <ul class="bullet-list">
+          <li><b>Stage 1:</b> S1 = XOR(A, B) &nbsp;&nbsp; C1 = AND(A, B)</li>
+          <li><b>Stage 2:</b> Sum = XOR(S1, Cin) &nbsp;&nbsp; C2 = AND(S1, Cin)</li>
+          <li><b>Cout</b> = OR(C1, C2) — carry-out to the next stage</li>
+          <li><b>5 gates total:</b> 2 XOR + 2 AND + 1 OR</li>
+        </ul>
+      </div>
+
+      <div class="ha-layout">
+
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg fa-svg" viewBox="0 0 500 150" aria-label="Full adder circuit diagram">
+
+            <!-- XOR1: A XOR B = S1 -->
+            <rect x="100" y="8"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="128" y="26" class="gate-box-lbl">XOR</text>
+
+            <!-- AND1: A AND B = C1 -->
+            <rect x="100" y="55" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="128" y="73" class="gate-box-lbl">AND</text>
+
+            <!-- XOR2: S1 XOR Cin = Sum -->
+            <rect x="265" y="28" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="293" y="46" class="gate-box-lbl">XOR</text>
+
+            <!-- AND2: S1 AND Cin = C2 -->
+            <rect x="265" y="78" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="293" y="96" class="gate-box-lbl">AND</text>
+
+            <!-- OR: C1 OR C2 = Cout -->
+            <rect x="385" y="55" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="413" y="73" class="gate-box-lbl">OR</text>
+
+            <!-- A: enters y=15, splits → XOR1 top-in + AND1 top-in -->
+            <line x1="0"  y1="15" x2="100" y2="15" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="25" y1="15" x2="25"  y2="62" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="25" y1="62" x2="100" y2="62" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="25" cy="15" r="2.5" fill="#555"/>
+            <text x="2" y="12" class="wire-lbl">A</text>
+
+            <!-- B: enters y=29, splits → XOR1 bot-in + AND1 bot-in -->
+            <line x1="0"  y1="29" x2="100" y2="29" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="40" y1="29" x2="40"  y2="76" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="40" y1="76" x2="100" y2="76" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="40" cy="29" r="2.5" fill="#555"/>
+            <text x="2" y="26" class="wire-lbl">B</text>
+
+            <!-- Cin: enters bottom-left, splits → XOR2 bot-in (y=49) + AND2 bot-in (y=99) -->
+            <line x1="0"  y1="130" x2="55"  y2="130" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="55" y1="49"  x2="55"  y2="130" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="55" y1="49"  x2="265" y2="49"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="55" y1="99"  x2="265" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="55" cy="99" r="2.5" fill="#555"/>
+            <text x="2" y="127" class="wire-lbl">Cin</text>
+
+            <!-- S1: XOR1 out(156,22) → bus at x=205 → XOR2 top-in(265,35) + AND2 top-in(265,85) -->
+            <line x1="156" y1="22" x2="205" y2="22" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="205" y1="22" x2="205" y2="85" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="205" y1="35" x2="265" y2="35" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="205" y1="85" x2="265" y2="85" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="205" cy="22" r="2.5" fill="#555"/>
+            <circle cx="205" cy="35" r="2.5" fill="#555"/>
+            <text x="158" y="18" class="wire-lbl" fill="#777">S1</text>
+
+            <!-- C1: AND1 out(156,69) → down to y=88 → right → up → OR top-in(385,62) -->
+            <line x1="156" y1="69" x2="156" y2="88" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="156" y1="88" x2="355" y2="88" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="355" y1="62" x2="355" y2="88" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="355" y1="62" x2="385" y2="62" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="158" y="84" class="wire-lbl" fill="#777">C1</text>
+
+            <!-- C2: AND2 out(321,92) → right → up → OR bot-in(385,76) -->
+            <line x1="321" y1="92" x2="370" y2="92" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="370" y1="76" x2="370" y2="92" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="370" y1="76" x2="385" y2="76" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="323" y="88" class="wire-lbl" fill="#777">C2</text>
+
+            <!-- Sum output: XOR2 out(321,42) → right -->
+            <line x1="321" y1="42" x2="500" y2="42" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="325" y="37" class="wire-lbl accent-lbl">Sum</text>
+
+            <!-- Cout output: OR out(441,69) → right -->
+            <line x1="441" y1="69" x2="500" y2="69" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="445" y="64" class="wire-lbl accent-lbl">Cout</text>
+
+          </svg>
+        </div>
+
+        <div class="ha-right">
+          <p class="diagram-label">Truth table</p>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Cin</th><th>Sum</th><th>Cout</th></tr></thead>
+            <tbody>
+              <tr data-fa="000"><td>0</td><td>0</td><td>0</td><td class="o o0">0</td><td class="o o0">0</td></tr>
+              <tr data-fa="001"><td>0</td><td>0</td><td>1</td><td class="o o1">1</td><td class="o o0">0</td></tr>
+              <tr data-fa="010"><td>0</td><td>1</td><td>0</td><td class="o o1">1</td><td class="o o0">0</td></tr>
+              <tr data-fa="011"><td>0</td><td>1</td><td>1</td><td class="o o0">0</td><td class="o o1">1</td></tr>
+              <tr data-fa="100"><td>1</td><td>0</td><td>0</td><td class="o o1">1</td><td class="o o0">0</td></tr>
+              <tr data-fa="101"><td>1</td><td>0</td><td>1</td><td class="o o0">0</td><td class="o o1">1</td></tr>
+              <tr data-fa="110"><td>1</td><td>1</td><td>0</td><td class="o o0">0</td><td class="o o1">1</td></tr>
+              <tr data-fa="111"><td>1</td><td>1</td><td>1</td><td class="o o1">1</td><td class="o o1">1</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try ha-try mux-try">
+            <button class="try-btn" id="fa-btn-a">A = 0</button>
+            <button class="try-btn" id="fa-btn-b">B = 0</button>
+            <button class="try-btn" id="fa-btn-cin">Cin = 0</button>
+            <span class="try-out">
+              Sum=<span id="fa-sum"  class="try-val o0">0</span>
+              &nbsp;Cout=<span id="fa-cout" class="try-val o0">0</span>
+            </span>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -571,6 +1204,242 @@
     decBtnA.addEventListener('click', () => { decA ^= 1; refreshDecoder(); });
     decBtnB.addEventListener('click', () => { decB ^= 1; refreshDecoder(); });
     refreshDecoder();
+
+    // ── SR Latch interactive ──
+    const srBtnS     = document.getElementById('sr-btn-s');
+    const srBtnR     = document.getElementById('sr-btn-r');
+    const srQSpan    = document.getElementById('sr-q');
+    const srStateLbl = document.getElementById('sr-state-lbl');
+    const srRows     = document.querySelectorAll('#sr-latch tbody tr');
+    let srS = 0, srR = 0, srQState = 0;
+
+    function refreshSR() {
+      if      (srS === 1 && srR === 0) srQState = 1;
+      else if (srS === 0 && srR === 1) srQState = 0;
+      // S=0,R=0: hold — srQState unchanged
+      // S=1,R=1: invalid — leave srQState as-is but show warning
+
+      const stateKey   = `${srS}${srR}`;
+      const isInvalid  = srS === 1 && srR === 1;
+      const stateNames = { '00': 'Hold', '10': 'Set', '01': 'Reset', '11': 'Invalid' };
+
+      srBtnS.textContent = `S = ${srS}`;
+      srBtnR.textContent = `R = ${srR}`;
+      srBtnS.classList.toggle('btn-on', srS === 1);
+      srBtnR.classList.toggle('btn-on', srR === 1);
+
+      srQSpan.textContent = isInvalid ? '⚠' : srQState;
+      srQSpan.className   = isInvalid ? 'try-val' : `try-val ${srQState ? 'o1' : 'o0'}`;
+
+      srStateLbl.textContent = stateNames[stateKey];
+      srStateLbl.classList.toggle('sr-invalid', isInvalid);
+
+      srRows.forEach(row => {
+        row.classList.toggle('row-active', row.dataset.sr === stateKey);
+      });
+    }
+
+    srBtnS.addEventListener('click', () => { srS ^= 1; refreshSR(); });
+    srBtnR.addEventListener('click', () => { srR ^= 1; refreshSR(); });
+    refreshSR();
+
+    // ── MUX interactive ──
+    const muxBtnA   = document.getElementById('mux-btn-a');
+    const muxBtnB   = document.getElementById('mux-btn-b');
+    const muxBtnSel = document.getElementById('mux-btn-sel');
+    const muxOutSpan = document.getElementById('mux-out');
+    const muxRows   = document.querySelectorAll('#mux tbody tr');
+    let muxA = 0, muxB = 0, muxSel = 0;
+
+    function refreshMux() {
+      const output = muxSel === 0 ? muxA : muxB;
+
+      muxBtnA.textContent   = `A = ${muxA}`;
+      muxBtnB.textContent   = `B = ${muxB}`;
+      muxBtnSel.textContent = `Sel = ${muxSel}`;
+      muxBtnA.classList.toggle('btn-on', muxA === 1);
+      muxBtnB.classList.toggle('btn-on', muxB === 1);
+      muxBtnSel.classList.toggle('btn-on', muxSel === 1);
+
+      muxOutSpan.textContent = output;
+      muxOutSpan.className   = `try-val ${output ? 'o1' : 'o0'}`;
+
+      muxRows.forEach(row => {
+        row.classList.toggle('row-active', row.dataset.mux === `${muxSel}${muxA}${muxB}`);
+      });
+    }
+
+    muxBtnA.addEventListener('click',   () => { muxA   ^= 1; refreshMux(); });
+    muxBtnB.addEventListener('click',   () => { muxB   ^= 1; refreshMux(); });
+    muxBtnSel.addEventListener('click', () => { muxSel ^= 1; refreshMux(); });
+    refreshMux();
+
+    // ── Full Adder interactive ──
+    const faBtnA   = document.getElementById('fa-btn-a');
+    const faBtnB   = document.getElementById('fa-btn-b');
+    const faBtnCin = document.getElementById('fa-btn-cin');
+    const faSum    = document.getElementById('fa-sum');
+    const faCout   = document.getElementById('fa-cout');
+    const faRows   = document.querySelectorAll('#full-adder tbody tr');
+    let faA = 0, faB = 0, faCin = 0;
+
+    function refreshFA() {
+      const s1     = faA ^ faB;
+      const c1     = faA & faB;
+      const sum    = s1  ^ faCin;
+      const c2     = s1  & faCin;
+      const cout   = c1  | c2;
+
+      faBtnA.textContent   = `A = ${faA}`;
+      faBtnB.textContent   = `B = ${faB}`;
+      faBtnCin.textContent = `Cin = ${faCin}`;
+      faBtnA.classList.toggle('btn-on', faA   === 1);
+      faBtnB.classList.toggle('btn-on', faB   === 1);
+      faBtnCin.classList.toggle('btn-on', faCin === 1);
+
+      faSum.textContent  = sum;
+      faSum.className    = `try-val ${sum  ? 'o1' : 'o0'}`;
+      faCout.textContent = cout;
+      faCout.className   = `try-val ${cout ? 'o1' : 'o0'}`;
+
+      faRows.forEach(row => {
+        row.classList.toggle('row-active', row.dataset.fa === `${faA}${faB}${faCin}`);
+      });
+    }
+
+    faBtnA.addEventListener('click',   () => { faA   ^= 1; refreshFA(); });
+    faBtnB.addEventListener('click',   () => { faB   ^= 1; refreshFA(); });
+    faBtnCin.addEventListener('click', () => { faCin ^= 1; refreshFA(); });
+    refreshFA();
+
+    // ── Clock / Oscillator interactive ──
+    const clkOutSpan         = document.getElementById('clk-out');
+    const clkToggleBtn       = document.getElementById('clk-toggle');
+    const clkWaveContainer   = document.getElementById('clk-wave');
+    const WAVE_HISTORY_LENGTH = 14;
+
+    let clockIsRunning   = false;
+    let clockIntervalId  = null;
+    let clockState       = 0;
+    let clockWaveHistory = Array(WAVE_HISTORY_LENGTH).fill(null);
+
+    // Build wave history cells once
+    clkWaveContainer.innerHTML = Array.from({ length: WAVE_HISTORY_LENGTH })
+      .map((_, cellIndex) => `<div class="clock-wave-cell" id="clk-cell-${cellIndex}"></div>`)
+      .join('');
+
+    function renderClockWave() {
+      clockWaveHistory.forEach((bitValue, cellIndex) => {
+        const cellElement = document.getElementById(`clk-cell-${cellIndex}`);
+        const isNewestCell = cellIndex === WAVE_HISTORY_LENGTH - 1;
+
+        if (bitValue === null) {
+          cellElement.className = 'clock-wave-cell';
+        } else {
+          cellElement.className = `clock-wave-cell wave-${bitValue}${isNewestCell ? ' wave-current' : ''}`;
+        }
+      });
+    }
+
+    function tickClock() {
+      // NOR(0, prev) = NOT(prev) — each tick inverts the output
+      clockState = clockState ^ 1;
+
+      clkOutSpan.textContent = clockState;
+      clkOutSpan.className   = `try-val ${clockState ? 'o1' : 'o0'} clock-out`;
+
+      clockWaveHistory.shift();
+      clockWaveHistory.push(clockState);
+      renderClockWave();
+    }
+
+    clkToggleBtn.addEventListener('click', () => {
+      if (clockIsRunning) {
+        clearInterval(clockIntervalId);
+        clockIsRunning = false;
+        clkToggleBtn.textContent = '▶ Start';
+        clkToggleBtn.classList.remove('btn-on');
+      } else {
+        clockIsRunning = true;
+        clkToggleBtn.textContent = '⏹ Stop';
+        clkToggleBtn.classList.add('btn-on');
+        clockIntervalId = setInterval(tickClock, 500);
+      }
+    });
+
+    // ── D Latch interactive ──
+    const dlBtnD     = document.getElementById('dl-btn-d');
+    const dlBtnE     = document.getElementById('dl-btn-e');
+    const dlQSpan    = document.getElementById('dl-q');
+    const dlQbSpan   = document.getElementById('dl-qb');
+    const dlStateLbl = document.getElementById('dl-state-lbl');
+    const dlRows     = document.querySelectorAll('#d-latch tbody tr');
+    // Q starts at 1 so the top output (Q) is high on power-up
+    let dlD = 0, dlE = 0, dlQ = 1;
+
+    function refreshDLatch() {
+      if (dlE === 1) dlQ = dlD;
+      const dlQBar = dlQ ^ 1;
+
+      const stateKey  = dlE === 0 ? 'hold' : (dlD === 0 ? '01' : '11');
+      const stateText = dlE === 0 ? 'Hold'  : (dlD === 0 ? 'Reset' : 'Set');
+
+      dlBtnD.textContent = 'D = ' + dlD;
+      dlBtnE.textContent = 'E = ' + dlE;
+      dlBtnD.classList.toggle('btn-on', dlD === 1);
+      dlBtnE.classList.toggle('btn-on', dlE === 1);
+
+      dlQSpan.textContent  = dlQ;
+      dlQSpan.className    = 'try-val ' + (dlQ    ? 'o1' : 'o0');
+      dlQbSpan.textContent = dlQBar;
+      dlQbSpan.className   = 'try-val ' + (dlQBar ? 'o1' : 'o0');
+
+      dlStateLbl.textContent = stateText;
+
+      dlRows.forEach(row => {
+        row.classList.toggle('row-active', row.dataset.dl === stateKey);
+      });
+    }
+
+    dlBtnD.addEventListener('click', () => { dlD ^= 1; refreshDLatch(); });
+    dlBtnE.addEventListener('click', () => { dlE ^= 1; refreshDLatch(); });
+    refreshDLatch();
+
+    // ── D Flip-Flop interactive ──
+    const dffBtnD     = document.getElementById('dff-btn-d');
+    const dffBtnCLK   = document.getElementById('dff-btn-clk');
+    const dffQSpan    = document.getElementById('dff-q');
+    const dffStateLbl = document.getElementById('dff-state-lbl');
+    const dffRows     = document.querySelectorAll('#d-flip-flop tbody tr');
+    let dffD = 0, dffCLK = 0, dffPrevCLK = 0, dffQ = 0;
+
+    function refreshDFF() {
+      const risingEdge = dffCLK === 1 && dffPrevCLK === 0;
+      if (risingEdge) dffQ = dffD;
+      dffPrevCLK = dffCLK;
+
+      const rowKey   = risingEdge ? ('r' + dffQ) : 'hold';
+      const stateText = risingEdge ? 'Captured' : 'Hold';
+
+      dffBtnD.textContent   = 'D = '   + dffD;
+      dffBtnCLK.textContent = 'CLK = ' + dffCLK;
+      dffBtnD.classList.toggle('btn-on',   dffD   === 1);
+      dffBtnCLK.classList.toggle('btn-on', dffCLK === 1);
+
+      dffQSpan.textContent = dffQ;
+      dffQSpan.className   = 'try-val ' + (dffQ ? 'o1' : 'o0');
+
+      dffStateLbl.textContent = stateText;
+
+      dffRows.forEach(row => {
+        row.classList.toggle('row-active', row.dataset.dff === rowKey);
+      });
+    }
+
+    dffBtnD.addEventListener('click',   () => { dffD   ^= 1; refreshDFF(); });
+    dffBtnCLK.addEventListener('click', () => { dffCLK ^= 1; refreshDFF(); });
+    refreshDFF();
+  
   </script>
 
 </body>
