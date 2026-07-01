@@ -3,254 +3,575 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BABFT — 6×5 Pixel Screen</title>
-  <link rel="stylesheet" href="./style.css" />
+  <title>BaBFT Logic Gate Guide</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <nav>
-    <a class="nav-brand" href="#">BABFT Logic</a>
-    <div class="nav-links">
-      <a href="#pipeline">Overview</a>
-      <a href="#notbus">Address Bus</a>
-      <a href="#decoder">Decoder</a>
-      <a href="#color">Color</a>
-      <a href="#grid">Grid</a>
-    </div>
-  </nav>
+  <main class="hero">
+    <p class="hero-label">Build a Boat for Treasure</p>
 
-  <section id="pipeline">
-    <p class="label">System Overview</p>
-    <div class="pipeline">
-      <div class="pipe-block pipe-addr"><div class="pb-count">×5</div><div class="pb-name">Address<br>Switches</div><div class="pb-sub">B0 – B4</div></div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-block pipe-not"><div class="pb-count">×5</div><div class="pb-name">NOR<br>Gates</div><div class="pb-sub">shared bus</div></div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-block pipe-dec"><div class="pb-count">×30</div><div class="pb-name">Decoder<br>Chains</div><div class="pb-sub">4 AND chained</div></div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-block pipe-write"><div class="pb-name">Write<br>Enable</div><div class="pb-sub">AND gate</div></div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-block pipe-color"><div class="pb-count">×30</div><div class="pb-name">Color<br>Gates</div><div class="pb-sub">R · G · B</div></div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-block pipe-disp"><div class="pb-count">×30</div><div class="pb-name">Display<br>Block</div><div class="pb-sub">Standard Mode</div></div>
-    </div>
-    <div class="pipeline pipeline-aux">
-      <div class="pipe-spacer"></div>
-      <div class="pipe-block pipe-write pipe-aux-block"><div class="pb-name">WRITE<br>Switch</div><div class="pb-sub">↑ into Write Enable</div></div>
-      <div class="pipe-spacer-wide"></div>
-      <div class="pipe-block pipe-color pipe-aux-block"><div class="pb-name">R · G · B<br>Switches</div><div class="pb-sub">↑ into Color Gates</div></div>
+    <h1>Logic Gate<br /><span class="accent">Guide</span></h1>
+
+    <p class="hero-sub">
+      Learn how to use <strong>logic gates</strong> in BaBFT —
+      from understanding every gate to building complete working circuits.
+    </p>
+
+    <a href="#gates" class="btn">Start Learning →</a>
+
+    <p class="hero-tip">
+      No standalone NOT gate exists —
+      use <code>NOR(signal, 0)</code> to invert a signal.
+    </p>
+  </main>
+
+  <section id="gates">
+    <div class="container">
+
+      <h2>The 6 Logic Gates</h2>
+      <p class="section-sub">Click A or B on any card to test it live. The matching truth table row highlights automatically.</p>
+
+      <div class="not-box">
+        <strong>⚠ There is no NOT gate in BaBFT.</strong>
+        To invert a signal, tie one input of a NOR gate permanently to <code>0</code>:
+        <div class="not-formula">NOR( signal, 0 ) = NOT( signal )</div>
+      </div>
+
+      <div class="gates-grid">
+
+        <div class="gate-card" data-gate="AND">
+          <div class="card-top">
+            <div>
+              <p class="gate-name">AND</p>
+              <p class="gate-rule">Output <b>1</b> only when <b>all</b> inputs are <b>1</b></p>
+            </div>
+            <svg class="gate-svg" viewBox="0 0 100 60" aria-hidden="true">
+              <path d="M 18 8 L 46 8 A 22 22 0 0 1 46 52 L 18 52 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+              <line x1="0"  y1="20" x2="18" y2="20" stroke="currentColor" stroke-width="2"/>
+              <line x1="0"  y1="40" x2="18" y2="40" stroke="currentColor" stroke-width="2"/>
+              <line x1="68" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="2"/>
+              <text x="2" y="16" class="svg-lbl">A</text>
+              <text x="2" y="56" class="svg-lbl">B</text>
+            </svg>
+          </div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o0">0</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o1">1</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try">
+            <button class="try-btn" data-input="a">A = 0</button>
+            <button class="try-btn" data-input="b">B = 0</button>
+            <span class="try-out">→ <span class="try-val o0">0</span></span>
+          </div>
+        </div>
+
+        <div class="gate-card" data-gate="OR">
+          <div class="card-top">
+            <div>
+              <p class="gate-name">OR</p>
+              <p class="gate-rule">Output <b>1</b> if <b>at least one</b> input is <b>1</b></p>
+            </div>
+            <svg class="gate-svg" viewBox="0 0 100 60" aria-hidden="true">
+              <path d="M 18 8 C 36 8 65 18 70 30 C 65 42 36 52 18 52 Q 8 30 18 8 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <line x1="0"  y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2"/>
+              <line x1="0"  y1="40" x2="21" y2="40" stroke="currentColor" stroke-width="2"/>
+              <line x1="70" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="2"/>
+              <text x="2" y="16" class="svg-lbl">A</text>
+              <text x="2" y="56" class="svg-lbl">B</text>
+            </svg>
+          </div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o0">0</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o1">1</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o1">1</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o1">1</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try">
+            <button class="try-btn" data-input="a">A = 0</button>
+            <button class="try-btn" data-input="b">B = 0</button>
+            <span class="try-out">→ <span class="try-val o0">0</span></span>
+          </div>
+        </div>
+
+        <div class="gate-card" data-gate="XOR">
+          <div class="card-top">
+            <div>
+              <p class="gate-name">XOR</p>
+              <p class="gate-rule">Output <b>1</b> only when inputs are <b>different</b></p>
+            </div>
+            <svg class="gate-svg" viewBox="0 0 100 60" aria-hidden="true">
+              <path d="M 18 8 C 36 8 65 18 70 30 C 65 42 36 52 18 52 Q 8 30 18 8 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M 12 8 Q 2 30 12 52" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <line x1="0"  y1="20" x2="18" y2="20" stroke="currentColor" stroke-width="2"/>
+              <line x1="0"  y1="40" x2="18" y2="40" stroke="currentColor" stroke-width="2"/>
+              <line x1="70" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="2"/>
+              <text x="2" y="16" class="svg-lbl">A</text>
+              <text x="2" y="56" class="svg-lbl">B</text>
+            </svg>
+          </div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o0">0</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o1">1</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o1">1</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o0">0</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try">
+            <button class="try-btn" data-input="a">A = 0</button>
+            <button class="try-btn" data-input="b">B = 0</button>
+            <span class="try-out">→ <span class="try-val o0">0</span></span>
+          </div>
+        </div>
+
+        <div class="gate-card" data-gate="NAND">
+          <div class="card-top">
+            <div>
+              <p class="gate-name">NAND</p>
+              <p class="gate-rule">Output <b>0</b> only when <b>all</b> inputs are <b>1</b></p>
+            </div>
+            <svg class="gate-svg" viewBox="0 0 100 60" aria-hidden="true">
+              <path d="M 18 8 L 46 8 A 22 22 0 0 1 46 52 L 18 52 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+              <line x1="0"  y1="20" x2="18" y2="20" stroke="currentColor" stroke-width="2"/>
+              <line x1="0"  y1="40" x2="18" y2="40" stroke="currentColor" stroke-width="2"/>
+              <circle cx="72" cy="30" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+              <line x1="76" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="2"/>
+              <text x="2" y="16" class="svg-lbl">A</text>
+              <text x="2" y="56" class="svg-lbl">B</text>
+            </svg>
+          </div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o1">1</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o1">1</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o1">1</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o0">0</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try">
+            <button class="try-btn" data-input="a">A = 0</button>
+            <button class="try-btn" data-input="b">B = 0</button>
+            <span class="try-out">→ <span class="try-val o1">1</span></span>
+          </div>
+        </div>
+
+        <div class="gate-card" data-gate="NOR">
+          <div class="card-top">
+            <div>
+              <p class="gate-name">NOR</p>
+              <p class="gate-rule">Output <b>1</b> only when <b>all</b> inputs are <b>0</b></p>
+            </div>
+            <svg class="gate-svg" viewBox="0 0 100 60" aria-hidden="true">
+              <path d="M 18 8 C 36 8 65 18 70 30 C 65 42 36 52 18 52 Q 8 30 18 8 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <line x1="0"  y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2"/>
+              <line x1="0"  y1="40" x2="21" y2="40" stroke="currentColor" stroke-width="2"/>
+              <circle cx="74" cy="30" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+              <line x1="78" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="2"/>
+              <text x="2" y="16" class="svg-lbl">A</text>
+              <text x="2" y="56" class="svg-lbl">B</text>
+            </svg>
+          </div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o1">1</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o0">0</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try">
+            <button class="try-btn" data-input="a">A = 0</button>
+            <button class="try-btn" data-input="b">B = 0</button>
+            <span class="try-out">→ <span class="try-val o1">1</span></span>
+          </div>
+        </div>
+
+        <div class="gate-card" data-gate="XNOR">
+          <div class="card-top">
+            <div>
+              <p class="gate-name">XNOR</p>
+              <p class="gate-rule">Output <b>1</b> only when inputs are <b>the same</b></p>
+            </div>
+            <svg class="gate-svg" viewBox="0 0 100 60" aria-hidden="true">
+              <path d="M 18 8 C 36 8 65 18 70 30 C 65 42 36 52 18 52 Q 8 30 18 8 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M 12 8 Q 2 30 12 52" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <line x1="0"  y1="20" x2="18" y2="20" stroke="currentColor" stroke-width="2"/>
+              <line x1="0"  y1="40" x2="18" y2="40" stroke="currentColor" stroke-width="2"/>
+              <circle cx="74" cy="30" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+              <line x1="78" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="2"/>
+              <text x="2" y="16" class="svg-lbl">A</text>
+              <text x="2" y="56" class="svg-lbl">B</text>
+            </svg>
+          </div>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o1">1</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o1">1</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try">
+            <button class="try-btn" data-input="a">A = 0</button>
+            <button class="try-btn" data-input="b">B = 0</button>
+            <span class="try-out">→ <span class="try-val o1">1</span></span>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
-  <section id="notbus">
-    <p class="label">Address Bus — each switch produces raw &amp; inverted signals</p>
-    <div class="svg-wrap">
-      <svg id="svg-notbus" viewBox="0 0 440 275" class="circ-svg">
-        <text x="31"  y="11" class="svgl-dim" text-anchor="middle">SWITCH</text>
-        <text x="118" y="11" class="svgl-dim" text-anchor="middle">NOR</text>
-        <text x="310" y="11" class="svgl-dim" text-anchor="middle">OUTPUT BUS</text>
-        <line x1="390" y1="18" x2="390" y2="260" class="svg-wire"/>
+  <section id="combining">
+    <div class="container">
 
-        <!-- B4 row: sw_y=35, gate y=33..55, top-in=38, bot-in=50, out=44 -->
-        <rect x="5" y="21" width="52" height="28" rx="5" class="svg-sw"/>
-        <text x="31" y="35" class="svgl-sw">B4</text>
-        <line x1="57" y1="35" x2="80" y2="35" class="svg-wire"/>
-        <circle cx="80" cy="35" r="3" class="svg-dot"/>
-        <polyline points="80,35 80,26 390,26" class="svg-wire"/>
-        <text x="396" y="26" class="svgl-raw">B4</text>
-        <polyline points="80,35 80,38 97,38" class="svg-wire"/>
-        <line x1="92" y1="50" x2="97" y2="50" class="svg-wire"/>
-        <text x="91" y="53" class="svgl-dim" style="font-size:7px;text-anchor:end">0</text>
-        <rect x="97" y="33" width="42" height="22" rx="3" class="svg-not"/>
-        <text x="118" y="44" class="svgl-not">NOR</text>
-        <line x1="139" y1="44" x2="390" y2="44" class="svg-wire"/>
-        <text x="396" y="44" class="svgl-inv">&#172;B4</text>
+      <h2>Inputs &amp; Combining Gates</h2>
+      <p class="section-sub">Real game objects, timing, and building circuits with more than 2 inputs.</p>
 
-        <!-- B3 row: sw_y=88, gate y=86..108, top-in=91, bot-in=103, out=97 -->
-        <rect x="5" y="74" width="52" height="28" rx="5" class="svg-sw"/>
-        <text x="31" y="88" class="svgl-sw">B3</text>
-        <line x1="57" y1="88" x2="80" y2="88" class="svg-wire"/>
-        <circle cx="80" cy="88" r="3" class="svg-dot"/>
-        <polyline points="80,88 80,79 390,79" class="svg-wire"/>
-        <text x="396" y="79" class="svgl-raw">B3</text>
-        <polyline points="80,88 80,91 97,91" class="svg-wire"/>
-        <line x1="92" y1="103" x2="97" y2="103" class="svg-wire"/>
-        <text x="91" y="106" class="svgl-dim" style="font-size:7px;text-anchor:end">0</text>
-        <rect x="97" y="86" width="42" height="22" rx="3" class="svg-not"/>
-        <text x="118" y="97" class="svgl-not">NOR</text>
-        <line x1="139" y1="97" x2="390" y2="97" class="svg-wire"/>
-        <text x="396" y="97" class="svgl-inv">&#172;B3</text>
+      <div class="concept">
+        <h3>Levers &amp; Switches</h3>
+        <p>Levers and switches are your signal sources. Connect their output wire directly into any gate input. That's it — no extra setup needed.</p>
+        <div class="signal-states">
+          <div class="sig-row">
+            <span class="sig-val on">1</span>
+            <span>Lever <b>ON</b> — active signal</span>
+          </div>
+          <div class="sig-row">
+            <span class="sig-val off">0</span>
+            <span>Lever <b>OFF</b> — no signal</span>
+          </div>
+        </div>
+      </div>
 
-        <!-- B2 row: sw_y=141, gate y=139..161, top-in=144, bot-in=156, out=150 -->
-        <rect x="5" y="127" width="52" height="28" rx="5" class="svg-sw"/>
-        <text x="31" y="141" class="svgl-sw">B2</text>
-        <line x1="57" y1="141" x2="80" y2="141" class="svg-wire"/>
-        <circle cx="80" cy="141" r="3" class="svg-dot"/>
-        <polyline points="80,141 80,132 390,132" class="svg-wire"/>
-        <text x="396" y="132" class="svgl-raw">B2</text>
-        <polyline points="80,141 80,144 97,144" class="svg-wire"/>
-        <line x1="92" y1="156" x2="97" y2="156" class="svg-wire"/>
-        <text x="91" y="159" class="svgl-dim" style="font-size:7px;text-anchor:end">0</text>
-        <rect x="97" y="139" width="42" height="22" rx="3" class="svg-not"/>
-        <text x="118" y="150" class="svgl-not">NOR</text>
-        <line x1="139" y1="150" x2="390" y2="150" class="svg-wire"/>
-        <text x="396" y="150" class="svgl-inv">&#172;B2</text>
+      <div class="concept">
+        <h3>Delay Block</h3>
+        <p>Passes a signal through after a fixed wait. Set anywhere between <code>0.05s</code> and <code>10s</code>. Useful for timing sequences, preventing rapid toggling, or building a simple clock pulse.</p>
+        <div class="delay-diagram">
+          <span class="dd-label">signal</span>
+          <div class="dd-wire"></div>
+          <div class="dd-block">delay<br/><span>0.05s – 10s</span></div>
+          <div class="dd-wire"></div>
+          <span class="dd-label">delayed signal</span>
+        </div>
+      </div>
 
-        <!-- B1 row: sw_y=194, gate y=192..214, top-in=197, bot-in=209, out=203 -->
-        <rect x="5" y="180" width="52" height="28" rx="5" class="svg-sw"/>
-        <text x="31" y="194" class="svgl-sw">B1</text>
-        <line x1="57" y1="194" x2="80" y2="194" class="svg-wire"/>
-        <circle cx="80" cy="194" r="3" class="svg-dot"/>
-        <polyline points="80,194 80,185 390,185" class="svg-wire"/>
-        <text x="396" y="185" class="svgl-raw">B1</text>
-        <polyline points="80,194 80,197 97,197" class="svg-wire"/>
-        <line x1="92" y1="209" x2="97" y2="209" class="svg-wire"/>
-        <text x="91" y="212" class="svgl-dim" style="font-size:7px;text-anchor:end">0</text>
-        <rect x="97" y="192" width="42" height="22" rx="3" class="svg-not"/>
-        <text x="118" y="203" class="svgl-not">NOR</text>
-        <line x1="139" y1="203" x2="390" y2="203" class="svg-wire"/>
-        <text x="396" y="203" class="svgl-inv">&#172;B1</text>
+      <div class="concept">
+        <h3>3+ Input Gates</h3>
+        <p>Every gate in BaBFT takes exactly 2 inputs. To AND three signals together, chain two AND gates — first gate handles A &amp; B, second gate handles that result &amp; C.</p>
+        <svg class="circuit-svg" viewBox="0 0 340 92" aria-label="3-input AND gate chain">
+          <!-- Gate 1 -->
+          <rect x="82" y="8" width="56" height="32" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="110" y="28" class="gate-box-lbl">AND</text>
+          <!-- Gate 2 -->
+          <rect x="208" y="32" width="56" height="32" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="236" y="52" class="gate-box-lbl">AND</text>
 
-        <!-- B0 row: sw_y=247, gate y=245..267, top-in=250, bot-in=262, out=256 -->
-        <rect x="5" y="233" width="52" height="28" rx="5" class="svg-sw"/>
-        <text x="31" y="247" class="svgl-sw">B0</text>
-        <line x1="57" y1="247" x2="80" y2="247" class="svg-wire"/>
-        <circle cx="80" cy="247" r="3" class="svg-dot"/>
-        <polyline points="80,247 80,238 390,238" class="svg-wire"/>
-        <text x="396" y="238" class="svgl-raw">B0</text>
-        <polyline points="80,247 80,250 97,250" class="svg-wire"/>
-        <line x1="92" y1="262" x2="97" y2="262" class="svg-wire"/>
-        <text x="91" y="265" class="svgl-dim" style="font-size:7px;text-anchor:end">0</text>
-        <rect x="97" y="245" width="42" height="22" rx="3" class="svg-not"/>
-        <text x="118" y="256" class="svgl-not">NOR</text>
-        <line x1="139" y1="256" x2="390" y2="256" class="svg-wire"/>
-        <text x="396" y="256" class="svgl-inv">&#172;B0</text>
+          <!-- Input A -->
+          <line x1="0" y1="19" x2="82" y2="19" stroke="#3d3d3d" stroke-width="1.5"/>
+          <text x="3" y="16" class="wire-lbl">A</text>
+          <!-- Input B -->
+          <line x1="0" y1="29" x2="82" y2="29" stroke="#3d3d3d" stroke-width="1.5"/>
+          <text x="3" y="26" class="wire-lbl">B</text>
+          <!-- Gate 1 out → Gate 2 in A -->
+          <polyline points="138,24 168,24 168,42 208,42" fill="none" stroke="#3d3d3d" stroke-width="1.5"/>
+          <!-- Input C → Gate 2 in B -->
+          <line x1="0" y1="76" x2="188" y2="76" stroke="#3d3d3d" stroke-width="1.5"/>
+          <polyline points="188,76 188,52 208,52" fill="none" stroke="#3d3d3d" stroke-width="1.5"/>
+          <text x="3" y="73" class="wire-lbl">C</text>
+          <!-- Gate 2 output -->
+          <line x1="264" y1="48" x2="340" y2="48" stroke="#3d3d3d" stroke-width="1.5"/>
+          <text x="268" y="43" class="wire-lbl accent-lbl">A AND B AND C</text>
+        </svg>
+      </div>
 
-        <text x="5" y="272" class="svgl-dim">NOR(A, 0) = NOT(A) · top input = signal · bottom input = 0</text>
-      </svg>
+      <div class="concept">
+        <h3>Inverting a Signal (NOT)</h3>
+        <p>There is no NOT gate. Use a NOR gate with one input permanently wired to <code>0</code> — in-game, leave that input disconnected or tie it to a lever that is always off.</p>
+        <svg class="circuit-svg" viewBox="0 0 310 65" aria-label="NOT from NOR diagram">
+          <!-- NOR gate box -->
+          <rect x="110" y="14" width="56" height="32" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+          <text x="138" y="34" class="gate-box-lbl">NOR</text>
+
+          <!-- Signal input -->
+          <line x1="0" y1="24" x2="110" y2="24" stroke="#3d3d3d" stroke-width="1.5"/>
+          <text x="3" y="21" class="wire-lbl">signal</text>
+          <!-- Tied-0 input (dashed = fixed/constant) -->
+          <line x1="0" y1="38" x2="110" y2="38" stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="3" y="52" class="wire-lbl muted-lbl">0 — always off</text>
+          <!-- Output -->
+          <line x1="166" y1="30" x2="310" y2="30" stroke="#3d3d3d" stroke-width="1.5"/>
+          <text x="170" y="25" class="wire-lbl accent-lbl">NOT(signal)</text>
+        </svg>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="half-adder">
+    <div class="container">
+
+      <h2>Half Adder</h2>
+      <p class="section-sub">Your first real circuit — adds two 1-bit numbers using one XOR and one AND gate.</p>
+
+      <div class="concept">
+        <p>A half adder takes two inputs and produces two outputs. Connect two levers, wire both into a XOR gate and an AND gate in parallel.</p>
+        <ul class="bullet-list">
+          <li><b>Sum</b> = XOR(A, B) — is 1 when exactly one input is 1</li>
+          <li><b>Carry</b> = AND(A, B) — is 1 only when both are 1, meaning the result overflowed into the next bit</li>
+        </ul>
+      </div>
+
+      <div class="ha-layout">
+
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg ha-svg" viewBox="0 0 340 110" aria-label="Half adder circuit diagram">
+            <!-- XOR gate box -->
+            <rect x="148" y="8"  width="56" height="32" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="176" y="28" class="gate-box-lbl">XOR</text>
+            <!-- AND gate box -->
+            <rect x="148" y="68" width="56" height="32" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="176" y="88" class="gate-box-lbl">AND</text>
+
+            <!-- A wire → splits to both gates -->
+            <line x1="0"   y1="20" x2="128" y2="20" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="128" y1="20" x2="128" y2="18" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="128" y1="18" x2="148" y2="18" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="128" y1="20" x2="128" y2="78" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="128" y1="78" x2="148" y2="78" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="128" cy="20" r="2.5" fill="#555"/>
+            <text x="3" y="17" class="wire-lbl">A</text>
+
+            <!-- B wire → splits to both gates -->
+            <line x1="0"   y1="40" x2="118" y2="40" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="118" y1="40" x2="118" y2="28" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="118" y1="28" x2="148" y2="28" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="118" y1="40" x2="118" y2="88" stroke="#3d3d3d" stroke-width="1.5"/>
+            <line x1="118" y1="88" x2="148" y2="88" stroke="#3d3d3d" stroke-width="1.5"/>
+            <circle cx="118" cy="40" r="2.5" fill="#555"/>
+            <text x="3" y="37" class="wire-lbl">B</text>
+
+            <!-- XOR output = Sum -->
+            <line x1="204" y1="24" x2="340" y2="24" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="208" y="19" class="wire-lbl accent-lbl">Sum</text>
+
+            <!-- AND output = Carry -->
+            <line x1="204" y1="84" x2="340" y2="84" stroke="#3d3d3d" stroke-width="1.5"/>
+            <text x="208" y="79" class="wire-lbl accent-lbl">Carry</text>
+          </svg>
+        </div>
+
+        <div class="ha-right">
+          <p class="diagram-label">Truth table</p>
+          <table class="truth-table">
+            <thead><tr><th>A</th><th>B</th><th>Sum</th><th>Carry</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td class="o o0">0</td><td class="o o0">0</td></tr>
+              <tr><td>0</td><td>1</td><td class="o o1">1</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>0</td><td class="o o1">1</td><td class="o o0">0</td></tr>
+              <tr><td>1</td><td>1</td><td class="o o0">0</td><td class="o o1">1</td></tr>
+            </tbody>
+          </table>
+          <div class="gate-try ha-try">
+            <button class="try-btn" id="ha-btn-a">A = 0</button>
+            <button class="try-btn" id="ha-btn-b">B = 0</button>
+            <span class="try-out">
+              Sum=<span id="ha-sum"   class="try-val o0">0</span>
+              &nbsp;Carry=<span id="ha-carry" class="try-val o0">0</span>
+            </span>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
   <section id="decoder">
-    <p class="label">Pixel Decoder — example: pixel #5 &nbsp;<code>00101</code></p>
-    <div class="svg-wrap">
-      <svg id="svg-decoder" viewBox="0 0 590 210" class="circ-svg">
-        <text x="5" y="11" class="svgl-dim">pixel #5 = 00101   B4=0  B3=0  B2=1  B1=0  B0=1</text>
-        <rect x="5" y="18" width="88" height="24" rx="4" class="svg-not"/>
-        <text x="49" y="30" class="svgl-not">&#172;B4  B4=0</text>
-        <rect x="5" y="58" width="88" height="24" rx="4" class="svg-not"/>
-        <text x="49" y="70" class="svgl-not">&#172;B3  B3=0</text>
-        <rect x="5" y="98" width="88" height="24" rx="4" class="svg-sw"/>
-        <text x="49" y="110" class="svgl-sw">B2   B2=1</text>
-        <rect x="5" y="138" width="88" height="24" rx="4" class="svg-not"/>
-        <text x="49" y="150" class="svgl-not">&#172;B1  B1=0</text>
-        <rect x="5" y="178" width="88" height="24" rx="4" class="svg-sw"/>
-        <text x="49" y="190" class="svgl-sw">B0   B0=1</text>
-        <polyline points="93,30 155,30 155,44 169,44" class="svg-wire"/>
-        <polyline points="93,70 155,70 155,56 169,56" class="svg-wire"/>
-        <rect x="169" y="39" width="44" height="22" rx="3" class="svg-and"/>
-        <text x="191" y="50" class="svgl-and">AND</text>
-        <polyline points="213,50 247,50 247,74 259,74" class="svg-wire"/>
-        <polyline points="93,110 247,110 247,86 259,86" class="svg-wire"/>
-        <rect x="259" y="69" width="44" height="22" rx="3" class="svg-and"/>
-        <text x="281" y="80" class="svgl-and">AND</text>
-        <polyline points="303,80 337,80 337,109 349,109" class="svg-wire"/>
-        <polyline points="93,150 337,150 337,121 349,121" class="svg-wire"/>
-        <rect x="349" y="104" width="44" height="22" rx="3" class="svg-and"/>
-        <text x="371" y="115" class="svgl-and">AND</text>
-        <polyline points="393,115 427,115 427,147 439,147" class="svg-wire"/>
-        <polyline points="93,190 427,190 427,159 439,159" class="svg-wire"/>
-        <rect x="439" y="142" width="44" height="22" rx="3" class="svg-and"/>
-        <text x="461" y="153" class="svgl-and">AND</text>
-        <line x1="483" y1="153" x2="503" y2="153" class="svg-wire"/>
-        <rect x="503" y="140" width="70" height="26" rx="5" class="svg-dec"/>
-        <text x="538" y="150" class="svgl-dec" style="font-size:8px;font-weight:700">DECODED</text>
-        <text x="538" y="161" class="svgl-dim" style="font-size:7px">pixel #5 only</text>
-      </svg>
+    <div class="container">
+
+      <h2>2-to-4 Decoder</h2>
+      <p class="section-sub">2 input bits select exactly 1 of 4 output lines. The building block of any address-based circuit.</p>
+
+      <div class="concept">
+        <p>A decoder reads a binary number and turns on one specific output. With 2 bits you have 4 possible values (00, 01, 10, 11) so you get 4 outputs — only one is ever active at a time.</p>
+        <p>Each output is an AND gate wired to the right mix of A, B, and their inverses. The inverses come from <code>NOR(x, 0)</code> — BaBFT's only way to invert.</p>
+      </div>
+
+      <div class="build-box">
+        <div class="parts-list">
+          <p class="diagram-label">Parts needed</p>
+          <div class="parts">
+            <div class="part"><span class="part-qty">2</span> Levers — inputs A and B</div>
+            <div class="part"><span class="part-qty">2</span> NOR gates — one for NOT A, one for NOT B</div>
+            <div class="part"><span class="part-qty">4</span> AND gates — one per output line</div>
+          </div>
+        </div>
+
+        <div class="build-steps-wrap">
+          <p class="diagram-label">How to wire it</p>
+          <ol class="build-steps">
+            <li>Place <b>lever A</b> and <b>lever B</b>. These are your address inputs.</li>
+            <li>Place a <b>NOR gate</b>. Connect <b>lever A → input 1</b>. Leave input 2 disconnected (disconnected = 0 in BaBFT). The output is <b>NOT A</b>.</li>
+            <li>Place another <b>NOR gate</b>. Connect <b>lever B → input 1</b>. Leave input 2 disconnected. Output is <b>NOT B</b>.</li>
+            <li>Place an <b>AND gate</b> for <b>Out 0</b>. Wire <b>NOT A → input 1</b>, <b>NOT B → input 2</b>. Active only when both levers are off.</li>
+            <li>Place an <b>AND gate</b> for <b>Out 1</b>. Wire <b>NOT A → input 1</b>, <b>lever B → input 2</b>. Active only when A=off, B=on.</li>
+            <li>Place an <b>AND gate</b> for <b>Out 2</b>. Wire <b>lever A → input 1</b>, <b>NOT B → input 2</b>. Active only when A=on, B=off.</li>
+            <li>Place an <b>AND gate</b> for <b>Out 3</b>. Wire <b>lever A → input 1</b>, <b>lever B → input 2</b>. Active only when both levers are on.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="dec-demo">
+        <div class="dec-inputs">
+          <button class="try-btn" id="dec-a">A = 0</button>
+          <button class="try-btn" id="dec-b">B = 0</button>
+        </div>
+        <div class="dec-arrow">→</div>
+        <div class="dec-outputs">
+          <div class="dec-out dec-active" id="dec-out-0"><span class="dec-pin">Out 0</span><span class="dec-val o1">1</span></div>
+          <div class="dec-out"            id="dec-out-1"><span class="dec-pin">Out 1</span><span class="dec-val o0">0</span></div>
+          <div class="dec-out"            id="dec-out-2"><span class="dec-pin">Out 2</span><span class="dec-val o0">0</span></div>
+          <div class="dec-out"            id="dec-out-3"><span class="dec-pin">Out 3</span><span class="dec-val o0">0</span></div>
+        </div>
+      </div>
+
+      <table class="truth-table dec-table">
+        <thead><tr><th>A</th><th>B</th><th>Out 0</th><th>Out 1</th><th>Out 2</th><th>Out 3</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td class="o o1">1</td><td class="o o0">0</td><td class="o o0">0</td><td class="o o0">0</td></tr>
+          <tr><td>0</td><td>1</td><td class="o o0">0</td><td class="o o1">1</td><td class="o o0">0</td><td class="o o0">0</td></tr>
+          <tr><td>1</td><td>0</td><td class="o o0">0</td><td class="o o0">0</td><td class="o o1">1</td><td class="o o0">0</td></tr>
+          <tr><td>1</td><td>1</td><td class="o o0">0</td><td class="o o0">0</td><td class="o o0">0</td><td class="o o1">1</td></tr>
+        </tbody>
+      </table>
+
+      <div class="concept" style="margin-top:2.5rem">
+        <h3>Scaling up in BaBFT</h3>
+        <p>A full 2-to-4 decoder costs <b>2 NOR gates</b> (inverters) + <b>4 AND gates</b> = 6 gates total. To address 30 pixels you need a 5-bit decoder — 5 NOR gates for the inverters, then up to 32 AND chains (one per address), each AND chain being 4 two-input AND gates deep. That's around 130 gates just for the address logic.</p>
+      </div>
+
     </div>
   </section>
 
-  <section id="color">
-    <p class="label">Write Enable &amp; Color Gates</p>
-    <div class="svg-wrap">
-      <svg id="svg-color" viewBox="0 0 460 195" class="circ-svg">
-        <rect x="5"  y="43" width="72" height="24" rx="4" class="svg-dec"/>
-        <text x="41" y="55" class="svgl-dec">DECODED</text>
-        <rect x="5"  y="73" width="72" height="24" rx="4" class="svg-wren"/>
-        <text x="41" y="85" class="svgl-wren">WRITE SW</text>
-        <polyline points="77,55 105,55 105,64 110,64" class="svg-wire"/>
-        <polyline points="77,85 105,85 105,76 110,76" class="svg-wire"/>
-        <rect x="110" y="59" width="44" height="22" rx="3" class="svg-wren"/>
-        <text x="132" y="70" class="svgl-wren">AND</text>
-        <line x1="154" y1="70" x2="170" y2="70" class="svg-wire"/>
-        <line x1="170" y1="29" x2="170" y2="161" class="svg-wire"/>
-        <circle cx="170" cy="35"  r="3" class="svg-dot"/>
-        <circle cx="170" cy="95"  r="3" class="svg-dot"/>
-        <circle cx="170" cy="155" r="3" class="svg-dot"/>
-        <rect x="185" y="23" width="60" height="24" rx="4" class="svg-col-r"/>
-        <text x="215" y="35" class="svgl-col-r">R  SW</text>
-        <polyline points="170,35 245,35 245,29 256,29" class="svg-wire"/>
-        <polyline points="245,35 245,41 256,41" class="svg-wire"/>
-        <rect x="256" y="24" width="44" height="22" rx="3" class="svg-col-r"/>
-        <text x="278" y="35" class="svgl-col-r">AND</text>
-        <line x1="300" y1="35" x2="355" y2="35" class="svg-wire-r"/>
-        <rect x="185" y="83" width="60" height="24" rx="4" class="svg-col-g"/>
-        <text x="215" y="95" class="svgl-col-g">G  SW</text>
-        <polyline points="170,95 245,95 245,89 256,89" class="svg-wire"/>
-        <polyline points="245,95 245,101 256,101" class="svg-wire"/>
-        <rect x="256" y="84" width="44" height="22" rx="3" class="svg-col-g"/>
-        <text x="278" y="95" class="svgl-col-g">AND</text>
-        <line x1="300" y1="95" x2="355" y2="95" class="svg-wire-g"/>
-        <rect x="185" y="143" width="60" height="24" rx="4" class="svg-col-b"/>
-        <text x="215" y="155" class="svgl-col-b">B  SW</text>
-        <polyline points="170,155 245,155 245,149 256,149" class="svg-wire"/>
-        <polyline points="245,155 245,161 256,161" class="svg-wire"/>
-        <rect x="256" y="144" width="44" height="22" rx="3" class="svg-col-b"/>
-        <text x="278" y="155" class="svgl-col-b">AND</text>
-        <line x1="300" y1="155" x2="355" y2="155" class="svg-wire-b"/>
-        <rect x="355" y="72" width="90" height="66" rx="6" class="svg-disp"/>
-        <text x="400" y="97"  class="svgl-disp">DISPLAY</text>
-        <text x="400" y="110" class="svgl-disp">BLOCK</text>
-        <text x="400" y="124" class="svgl-dim" style="font-size:8px">Standard Mode</text>
-      </svg>
-    </div>
-  </section>
+  <script>
+    const GATE_LOGIC = {
+      AND:  (a, b) => a & b,
+      OR:   (a, b) => a | b,
+      XOR:  (a, b) => a ^ b,
+      NAND: (a, b) => (a & b) ^ 1,
+      NOR:  (a, b) => (a | b) ^ 1,
+      XNOR: (a, b) => (a ^ b) ^ 1,
+    };
 
-  <section id="grid">
-    <p class="label">6×5 Address Map</p>
-    <div class="addr-grid">
-      <div class="addr-cell">0<br><small>00000</small></div>
-      <div class="addr-cell">1<br><small>00001</small></div>
-      <div class="addr-cell">2<br><small>00010</small></div>
-      <div class="addr-cell">3<br><small>00011</small></div>
-      <div class="addr-cell">4<br><small>00100</small></div>
-      <div class="addr-cell addr-cell-hl">5<br><small>00101</small></div>
-      <div class="addr-cell">6<br><small>00110</small></div>
-      <div class="addr-cell">7<br><small>00111</small></div>
-      <div class="addr-cell">8<br><small>01000</small></div>
-      <div class="addr-cell">9<br><small>01001</small></div>
-      <div class="addr-cell">10<br><small>01010</small></div>
-      <div class="addr-cell">11<br><small>01011</small></div>
-      <div class="addr-cell">12<br><small>01100</small></div>
-      <div class="addr-cell">13<br><small>01101</small></div>
-      <div class="addr-cell">14<br><small>01110</small></div>
-      <div class="addr-cell">15<br><small>01111</small></div>
-      <div class="addr-cell">16<br><small>10000</small></div>
-      <div class="addr-cell">17<br><small>10001</small></div>
-      <div class="addr-cell">18<br><small>10010</small></div>
-      <div class="addr-cell">19<br><small>10011</small></div>
-      <div class="addr-cell">20<br><small>10100</small></div>
-      <div class="addr-cell">21<br><small>10101</small></div>
-      <div class="addr-cell">22<br><small>10110</small></div>
-      <div class="addr-cell">23<br><small>10111</small></div>
-      <div class="addr-cell">24<br><small>11000</small></div>
-      <div class="addr-cell">25<br><small>11001</small></div>
-      <div class="addr-cell">26<br><small>11010</small></div>
-      <div class="addr-cell">27<br><small>11011</small></div>
-      <div class="addr-cell">28<br><small>11100</small></div>
-      <div class="addr-cell">29<br><small>11101</small></div>
-    </div>
-    <p class="grid-note">Addresses 30 – 31 unused &nbsp;(2 of 32 wasted)</p>
-  </section>
+    document.querySelectorAll('.gate-card').forEach(card => {
+      const gateType  = card.dataset.gate;
+      const btnA      = card.querySelector('[data-input="a"]');
+      const btnB      = card.querySelector('[data-input="b"]');
+      const valSpan   = card.querySelector('.try-val');
+      const tableRows = card.querySelectorAll('tbody tr');
+      let stateA = 0, stateB = 0;
+
+      function refresh() {
+        const out = GATE_LOGIC[gateType](stateA, stateB);
+        btnA.textContent = `A = ${stateA}`;
+        btnB.textContent = `B = ${stateB}`;
+        btnA.classList.toggle('btn-on', stateA === 1);
+        btnB.classList.toggle('btn-on', stateB === 1);
+        valSpan.textContent = out;
+        valSpan.className = `try-val ${out ? 'o1' : 'o0'}`;
+        tableRows.forEach(row => {
+          row.classList.toggle('row-active',
+            +row.cells[0].textContent === stateA &&
+            +row.cells[1].textContent === stateB
+          );
+        });
+      }
+
+      btnA.addEventListener('click', () => { stateA ^= 1; refresh(); });
+      btnB.addEventListener('click', () => { stateB ^= 1; refresh(); });
+      refresh();
+    });
+
+    // ── Half adder interactive ──
+    const haBtnA  = document.getElementById('ha-btn-a');
+    const haBtnB  = document.getElementById('ha-btn-b');
+    const haSum   = document.getElementById('ha-sum');
+    const haCarry = document.getElementById('ha-carry');
+    const haRows  = document.querySelectorAll('#half-adder tbody tr');
+    let haA = 0, haB = 0;
+
+    function refreshHA() {
+      const sum   = haA ^ haB;
+      const carry = haA & haB;
+      haBtnA.textContent = `A = ${haA}`;
+      haBtnB.textContent = `B = ${haB}`;
+      haBtnA.classList.toggle('btn-on', haA === 1);
+      haBtnB.classList.toggle('btn-on', haB === 1);
+      haSum.textContent   = sum;
+      haSum.className     = `try-val ${sum   ? 'o1' : 'o0'}`;
+      haCarry.textContent = carry;
+      haCarry.className   = `try-val ${carry ? 'o1' : 'o0'}`;
+      haRows.forEach(row => {
+        row.classList.toggle('row-active',
+          +row.cells[0].textContent === haA &&
+          +row.cells[1].textContent === haB
+        );
+      });
+    }
+
+    haBtnA.addEventListener('click', () => { haA ^= 1; refreshHA(); });
+    haBtnB.addEventListener('click', () => { haB ^= 1; refreshHA(); });
+    refreshHA();
+
+    // ── Decoder interactive ──
+    const decBtnA   = document.getElementById('dec-a');
+    const decBtnB   = document.getElementById('dec-b');
+    const decOutEls = [0, 1, 2, 3].map(i => document.getElementById(`dec-out-${i}`));
+    const decRows   = document.querySelectorAll('#decoder tbody tr');
+    let decA = 0, decB = 0;
+
+    function refreshDecoder() {
+      const nA = decA ^ 1;
+      const nB = decB ^ 1;
+      const outputs = [ nA & nB, nA & decB, decA & nB, decA & decB ];
+
+      decBtnA.textContent = `A = ${decA}`;
+      decBtnB.textContent = `B = ${decB}`;
+      decBtnA.classList.toggle('btn-on', decA === 1);
+      decBtnB.classList.toggle('btn-on', decB === 1);
+
+      decOutEls.forEach((el, i) => {
+        const valEl = el.querySelector('.dec-val');
+        valEl.textContent = outputs[i];
+        valEl.className   = `dec-val ${outputs[i] ? 'o1' : 'o0'}`;
+        el.classList.toggle('dec-active', outputs[i] === 1);
+      });
+
+      decRows.forEach(row => {
+        row.classList.toggle('row-active',
+          +row.cells[0].textContent === decA &&
+          +row.cells[1].textContent === decB
+        );
+      });
+    }
+
+    decBtnA.addEventListener('click', () => { decA ^= 1; refreshDecoder(); });
+    decBtnB.addEventListener('click', () => { decB ^= 1; refreshDecoder(); });
+    refreshDecoder();
+  </script>
+
 </body>
 </html>
