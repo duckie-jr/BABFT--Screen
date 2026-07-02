@@ -683,186 +683,6 @@
     </div>
   </section>
 
-    <section id="d-latch">
-    <div class="container">
-      <h2>D Latch</h2>
-      <p class="section-sub">Adds an Enable gate to an SR latch &mdash; avoids the invalid state and controls when data is captured.</p>
-      <div class="concept">
-        <p>A D latch has one data input <b>D</b> and one enable input <b>E</b>. While E is 1 the output Q follows D (transparent). When E drops to 0 Q freezes &mdash; it holds whatever D was at that moment.</p>
-        <ul class="bullet-list">
-          <li><b>E = 1</b> &mdash; transparent: Q tracks D in real time</li>
-          <li><b>E = 0</b> &mdash; latched: Q holds its last value regardless of D</li>
-          <li><b>No invalid state</b> &mdash; S = AND(D,&nbsp;E) and R = AND(NOT&nbsp;D,&nbsp;E) are always opposite when E = 1</li>
-          <li><b>BaBFT cost:</b> 1 NOR (inverter) + 2 AND (steering) + 2 NOR (SR latch) = 5 gates</li>
-        </ul>
-      </div>
-      <div class="ha-layout">
-        <div>
-          <p class="diagram-label">Circuit</p>
-          <svg class="circuit-svg ha-svg" viewBox="0 0 490 130" aria-label="D latch circuit diagram">
-
-            <!-- NOR gate (NOT D) — positioned left-centre, clear of all other wires -->
-            <rect x="40"  y="50" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
-            <text x="68"  y="68" class="gate-box-lbl">NOR</text>
-
-            <!-- AND gate S = AND(D, E) -->
-            <rect x="175" y="8"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
-            <text x="203" y="26" class="gate-box-lbl">AND</text>
-
-            <!-- AND gate R = AND(NOT D, E) -->
-            <rect x="175" y="92" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
-            <text x="203" y="110" class="gate-box-lbl">AND</text>
-
-            <!-- SR latch top NOR (outputs Q) -->
-            <rect x="325" y="8"  width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
-            <text x="353" y="26" class="gate-box-lbl">NOR</text>
-
-            <!-- SR latch bot NOR (outputs Q-bar) -->
-            <rect x="325" y="92" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
-            <text x="353" y="110" class="gate-box-lbl">NOR</text>
-
-            <!-- D wire: main runs along top (y=15) to AND_S; branch drops to NOR top-in at x=20 (left of NOR box) -->
-            <line x1="0"  y1="15" x2="175" y2="15" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="20" y1="15" x2="20"  y2="57" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="20" y1="57" x2="40"  y2="57" stroke="#3d3d3d" stroke-width="1.5"/>
-            <circle cx="20" cy="15" r="2.5" fill="#555"/>
-            <text x="2" y="12" class="wire-lbl">D</text>
-
-            <!-- NOR grounded bot-in -->
-            <line x1="18" y1="71" x2="40"  y2="71" stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <text x="8"  y="76" class="wire-lbl muted-lbl">0</text>
-
-            <!-- E wire: enters at y=80 (below NOR box), branches up to AND_S bot-in and down to AND_R bot-in -->
-            <line x1="0"  y1="80" x2="30"  y2="80"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="30" y1="29" x2="30"  y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="30" y1="29" x2="175" y2="29"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="30" y1="113" x2="175" y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
-            <circle cx="30" cy="80" r="2.5" fill="#555"/>
-            <text x="2" y="77" class="wire-lbl">E</text>
-
-            <!-- NOT D: NOR output to AND_R top-in (routes below NOR, clear of E wire) -->
-            <line x1="96"  y1="64" x2="135" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="135" y1="64" x2="135" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="135" y1="99" x2="175" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <text x="98" y="60" class="wire-lbl" fill="#777">NOT D</text>
-
-            <!-- S: AND_S output to NOR1 top-in -->
-            <line x1="231" y1="22" x2="270" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="270" y1="15" x2="270" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="270" y1="15" x2="325" y2="15"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <text x="233" y="18" class="wire-lbl" fill="#777">S</text>
-
-            <!-- R: AND_R output to NOR2 top-in -->
-            <line x1="231" y1="106" x2="270" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="270" y1="99"  x2="270" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="270" y1="99"  x2="325" y2="99"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <text x="233" y="102" class="wire-lbl" fill="#777">R</text>
-
-            <!-- Q-bar feedback: NOR2 output right, tap up to NOR1 bot-in -->
-            <line x1="381" y1="106" x2="490" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="415" y1="29"  x2="415" y2="106" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="325" y1="29"  x2="415" y2="29"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <circle cx="415" cy="106" r="2.5" fill="#555"/>
-            <text x="385" y="102" class="wire-lbl muted-lbl"><tspan text-decoration="overline">Q</tspan></text>
-
-            <!-- Q output + feedback: NOR1 output right, tap down to NOR2 bot-in -->
-            <line x1="381" y1="22"  x2="490" y2="22"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="440" y1="22"  x2="440" y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="325" y1="113" x2="440" y2="113" stroke="#3d3d3d" stroke-width="1.5"/>
-            <circle cx="440" cy="22" r="2.5" fill="#555"/>
-            <text x="444" y="17" class="wire-lbl accent-lbl">Q</text>
-
-          </svg>
-        </div>
-        <div class="ha-right">
-          <p class="diagram-label">Behaviour</p>
-          <table class="truth-table">
-            <thead><tr><th>E</th><th>D</th><th>Q</th><th>Q&#773;</th><th>Mode</th></tr></thead>
-            <tbody>
-              <tr data-dl="hold"><td>0</td><td class="muted-cell">&times;</td><td class="o">&mdash;</td><td class="o">&mdash;</td><td class="sr-state">Hold</td></tr>
-              <tr data-dl="01"><td>1</td><td>0</td><td class="o o0">0</td><td class="o o1">1</td><td class="sr-state">Reset</td></tr>
-              <tr data-dl="11"><td>1</td><td>1</td><td class="o o1">1</td><td class="o o0">0</td><td class="sr-state">Set</td></tr>
-            </tbody>
-          </table>
-          <div class="gate-try ha-try">
-            <button class="try-btn" id="dl-btn-e">E = 0</button>
-            <button class="try-btn" id="dl-btn-d">D = 0</button>
-            <span class="try-out">Q = <span id="dl-q" class="try-val o1">1</span> &nbsp; Q&#773; = <span id="dl-qb" class="try-val o0">0</span> &nbsp; <span id="dl-state-lbl" class="sr-demo-state">Hold</span></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="d-flip-flop">
-    <div class="container">
-      <h2>D Flip-Flop</h2>
-      <p class="section-sub">Edge-triggered: captures D only on the rising edge of CLK. Immune to glitches while the clock is stable.</p>
-      <div class="concept">
-        <p>A D flip-flop is two D latches in series &mdash; a <b>master</b> and a <b>slave</b>. The master opens when CLK&nbsp;=&nbsp;0; the slave opens when CLK&nbsp;=&nbsp;1. On the 0&rarr;1 edge the master closes (locking D) and the slave opens simultaneously (passing the locked value to Q). Q only ever changes at that single instant.</p>
-        <ul class="bullet-list">
-          <li><b>CLK = 0</b> &mdash; master transparent, slave latched: D can change freely, Q is frozen</li>
-          <li><b>CLK &uarr; (0&rarr;1)</b> &mdash; master closes, slave opens: Q captures D</li>
-          <li><b>CLK = 1</b> &mdash; master latched, slave transparent: D changes are blocked, Q holds</li>
-          <li><b>BaBFT cost:</b> 2 &times; D latch = 10 gates total</li>
-        </ul>
-      </div>
-      <div class="ha-layout">
-        <div>
-          <p class="diagram-label">Master-Slave Circuit</p>
-          <svg class="circuit-svg ha-svg" viewBox="0 0 490 115" aria-label="D flip-flop master-slave circuit diagram">
-            <rect x="22"  y="40" width="56" height="28" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
-            <text x="50"  y="58" class="gate-box-lbl">NOR</text>
-            <rect x="148" y="10" width="90" height="72" rx="3" fill="none" stroke="#3a3a3a" stroke-width="1.5" stroke-dasharray="5 3"/>
-            <text x="193" y="34" class="gate-box-lbl">MASTER</text>
-            <text x="193" y="50" class="gate-box-lbl">D LATCH</text>
-            <text x="193" y="68" class="wire-lbl muted-lbl">E = NOT CLK</text>
-            <rect x="335" y="10" width="90" height="72" rx="3" fill="none" stroke="#3a3a3a" stroke-width="1.5" stroke-dasharray="5 3"/>
-            <text x="380" y="34" class="gate-box-lbl">SLAVE</text>
-            <text x="380" y="50" class="gate-box-lbl">D LATCH</text>
-            <text x="380" y="68" class="wire-lbl muted-lbl">E = CLK</text>
-            <line x1="0"   y1="27" x2="148" y2="27"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <text x="2" y="24" class="wire-lbl">D</text>
-            <line x1="0"   y1="47" x2="22"  y2="47"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="10"  y1="47" x2="10"  y2="92"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="10"  y1="92" x2="322" y2="92"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="322" y1="64" x2="322" y2="92"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="322" y1="64" x2="335" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <circle cx="10" cy="47" r="2.5" fill="#555"/>
-            <text x="2" y="44" class="wire-lbl">CLK</text>
-            <line x1="4"   y1="61" x2="22"  y2="61"  stroke="#3d3d3d" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <text x="1"    y="66" class="wire-lbl muted-lbl">0</text>
-            <line x1="78"  y1="54" x2="118" y2="54"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="118" y1="54" x2="118" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="118" y1="64" x2="148" y2="64"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <text x="80" y="50" class="wire-lbl" fill="#777">NOT CLK</text>
-            <line x1="238" y1="42" x2="298" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="298" y1="27" x2="298" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="298" y1="27" x2="335" y2="27"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <line x1="425" y1="42" x2="490" y2="42"  stroke="#3d3d3d" stroke-width="1.5"/>
-            <text x="430" y="37" class="wire-lbl accent-lbl">Q</text>
-          </svg>
-        </div>
-        <div class="ha-right">
-          <p class="diagram-label">Behaviour</p>
-          <table class="truth-table">
-            <thead><tr><th>CLK</th><th>D</th><th>Q</th><th>Mode</th></tr></thead>
-            <tbody>
-              <tr data-dff="r0"><td>&uarr;</td><td>0</td><td class="o o0">0</td><td class="sr-state">Capture</td></tr>
-              <tr data-dff="r1"><td>&uarr;</td><td>1</td><td class="o o1">1</td><td class="sr-state">Capture</td></tr>
-              <tr data-dff="hold"><td>0 / 1</td><td class="muted-cell">&times;</td><td class="o">&mdash;</td><td class="sr-state">Hold</td></tr>
-            </tbody>
-          </table>
-          <div class="gate-try ha-try">
-            <button class="try-btn" id="dff-btn-d">D = 0</button>
-            <button class="try-btn" id="dff-btn-clk">CLK = 0</button>
-            <span class="try-out">Q = <span id="dff-q" class="try-val o0">0</span> <span id="dff-state-lbl" class="sr-demo-state">Hold</span></span>
-          </div>
-          <p class="clock-note">Click <code>CLK</code> to toggle &mdash; Q only updates on the <b>0 &rarr; 1</b> transition.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <section id="mux">
     <div class="container">
@@ -1096,6 +916,98 @@
         </div>
 
       </div>
+    </div>
+  </section>
+
+
+  <section id="led-display">
+    <div class="container">
+      <h2>LED Display System</h2>
+      <p class="section-sub">Minimum build: 3 color levers, 1 activate lever, 3 AND gates, 3 delay blocks, and a screen. Colors mix additively — more channels active = brighter compound color.</p>
+      <div class="concept">
+        <h3>How it works</h3>
+        <p>Each color channel (R, G, B) has its own AND gate. The AND gate passes the color only when the Activate lever is also ON. Each gated signal then flows through a Delay block before reaching the screen channel. The screen mixes additively — more channels = brighter, different color.</p>
+        <ul class="bullet-list">
+          <li><b>AND gate:</b> AND(color lever, activate) — gates each channel individually</li>
+          <li><b>Delay:</b> conditions the signal before it hits the screen, prevents instant flicker</li>
+          <li><b>Screen (additive):</b> R+G = Yellow, R+B = Magenta, G+B = Cyan, R+G+B = White</li>
+        </ul>
+      </div>
+      <div class="ha-layout">
+        <div>
+          <p class="diagram-label">Circuit</p>
+          <svg class="circuit-svg" viewBox="0 0 370 200" style="max-width:440px;width:100%" aria-label="LED display circuit diagram">
+            <line x1="30" y1="14"  x2="110" y2="14"  stroke="#ff5555" stroke-width="1.8"/>
+            <text x="2"  y="11"  class="wire-lbl" fill="#ff8888">R lever</text>
+            <line x1="30" y1="78"  x2="110" y2="78"  stroke="#44cc44" stroke-width="1.8"/>
+            <text x="2"  y="75"  class="wire-lbl" fill="#66ee66">G lever</text>
+            <line x1="30" y1="142" x2="110" y2="142" stroke="#4488ff" stroke-width="1.8"/>
+            <text x="2"  y="139" class="wire-lbl" fill="#77aaff">B lever</text>
+            <line x1="30" y1="182" x2="65"  y2="182" stroke="#999" stroke-width="1.8"/>
+            <line x1="65" y1="182" x2="65"  y2="26"  stroke="#999" stroke-width="1.8"/>
+            <text x="2"  y="194" class="wire-lbl" fill="#bbb">Activate</text>
+            <circle cx="65" cy="26"  r="2.5" fill="#999"/>
+            <line x1="65" y1="26"  x2="110" y2="26"  stroke="#999" stroke-width="1.8"/>
+            <circle cx="65" cy="90"  r="2.5" fill="#999"/>
+            <line x1="65" y1="90"  x2="110" y2="90"  stroke="#999" stroke-width="1.8"/>
+            <circle cx="65" cy="154" r="2.5" fill="#999"/>
+            <line x1="65" y1="154" x2="110" y2="154" stroke="#999" stroke-width="1.8"/>
+            <rect x="110" y="8"   width="56" height="24" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="138" y="24" class="gate-box-lbl">AND</text>
+            <rect x="110" y="72"  width="56" height="24" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="138" y="88" class="gate-box-lbl">AND</text>
+            <rect x="110" y="136" width="56" height="24" rx="2" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="138" y="152" class="gate-box-lbl">AND</text>
+            <line x1="166" y1="20"  x2="188" y2="20"  stroke="#ff5555" stroke-width="1.8"/>
+            <line x1="166" y1="84"  x2="188" y2="84"  stroke="#44cc44" stroke-width="1.8"/>
+            <line x1="166" y1="148" x2="188" y2="148" stroke="#4488ff" stroke-width="1.8"/>
+            <rect x="188" y="11"  width="60" height="18" rx="2" fill="#1c1c1c" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="218" y="23" class="gate-box-lbl">DELAY</text>
+            <rect x="188" y="75"  width="60" height="18" rx="2" fill="#1c1c1c" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="218" y="87" class="gate-box-lbl">DELAY</text>
+            <rect x="188" y="139" width="60" height="18" rx="2" fill="#1c1c1c" stroke="#3a3a3a" stroke-width="1.5"/>
+            <text x="218" y="151" class="gate-box-lbl">DELAY</text>
+            <line x1="248" y1="20"  x2="272" y2="20"  stroke="#ff5555" stroke-width="1.8"/>
+            <line x1="248" y1="84"  x2="272" y2="84"  stroke="#44cc44" stroke-width="1.8"/>
+            <line x1="248" y1="148" x2="272" y2="148" stroke="#4488ff" stroke-width="1.8"/>
+            <rect x="272" y="5" width="90" height="163" rx="4" fill="#111" stroke="#555" stroke-width="1.5"/>
+            <text x="317" y="90" class="gate-box-lbl" text-anchor="middle">SCREEN</text>
+            <text x="277" y="17"  class="wire-lbl" fill="#ff8888">R</text>
+            <text x="277" y="81"  class="wire-lbl" fill="#66ee66">G</text>
+            <text x="277" y="145" class="wire-lbl" fill="#77aaff">B</text>
+          </svg>
+        </div>
+        <div class="ha-right">
+          <p class="diagram-label">Live Color Mixer</p>
+          <div class="led-demo">
+            <div class="led-screen-wrap">
+              <div class="led-screen" id="led-screen"></div>
+              <div class="led-color-name" id="led-color-name">Off (Black)</div>
+            </div>
+            <div class="led-switches">
+              <button class="try-btn led-r-btn" id="led-btn-r">R = 0</button>
+              <button class="try-btn led-g-btn" id="led-btn-g">G = 0</button>
+              <button class="try-btn led-b-btn" id="led-btn-b">B = 0</button>
+              <button class="try-btn"           id="led-btn-act">Activate = 0</button>
+            </div>
+            <p class="clock-note">Color updates <code>200ms</code> after switch — simulating the delay block.</p>
+          </div>
+        </div>
+      </div>
+      <table class="truth-table" style="margin-top:2rem">
+        <thead><tr><th>R</th><th>G</th><th>B</th><th>Screen color (additive mix)</th></tr></thead>
+        <tbody>
+          <tr data-led="000"><td>0</td><td>0</td><td>0</td><td><span class="led-swatch" style="background:#000;border:1px solid #444"></span> Black (off)</td></tr>
+          <tr data-led="100"><td>1</td><td>0</td><td>0</td><td><span class="led-swatch" style="background:#f00"></span> Red</td></tr>
+          <tr data-led="010"><td>0</td><td>1</td><td>0</td><td><span class="led-swatch" style="background:#0f0"></span> Green</td></tr>
+          <tr data-led="001"><td>0</td><td>0</td><td>1</td><td><span class="led-swatch" style="background:#00f"></span> Blue</td></tr>
+          <tr data-led="110"><td>1</td><td>1</td><td>0</td><td><span class="led-swatch" style="background:#ff0"></span> Yellow</td></tr>
+          <tr data-led="101"><td>1</td><td>0</td><td>1</td><td><span class="led-swatch" style="background:#f0f"></span> Magenta</td></tr>
+          <tr data-led="011"><td>0</td><td>1</td><td>1</td><td><span class="led-swatch" style="background:#0ff"></span> Cyan</td></tr>
+          <tr data-led="111"><td>1</td><td>1</td><td>1</td><td><span class="led-swatch" style="background:#fff"></span> White</td></tr>
+        </tbody>
+      </table>
+      <p class="clock-note" style="margin-top:0.75rem">Table shows output when <b>Activate = 1</b>. With Activate = 0 all AND gates block — screen stays black regardless of color switch states.</p>
     </div>
   </section>
 
@@ -1367,79 +1279,46 @@
       }
     });
 
-    // ── D Latch interactive ──
-    const dlBtnD     = document.getElementById('dl-btn-d');
-    const dlBtnE     = document.getElementById('dl-btn-e');
-    const dlQSpan    = document.getElementById('dl-q');
-    const dlQbSpan   = document.getElementById('dl-qb');
-    const dlStateLbl = document.getElementById('dl-state-lbl');
-    const dlRows     = document.querySelectorAll('#d-latch tbody tr');
-    // Q starts at 1 so the top output (Q) is high on power-up
-    let dlD = 0, dlE = 0, dlQ = 1;
-
-    function refreshDLatch() {
-      if (dlE === 1) dlQ = dlD;
-      const dlQBar = dlQ ^ 1;
-
-      const stateKey  = dlE === 0 ? 'hold' : (dlD === 0 ? '01' : '11');
-      const stateText = dlE === 0 ? 'Hold'  : (dlD === 0 ? 'Reset' : 'Set');
-
-      dlBtnD.textContent = 'D = ' + dlD;
-      dlBtnE.textContent = 'E = ' + dlE;
-      dlBtnD.classList.toggle('btn-on', dlD === 1);
-      dlBtnE.classList.toggle('btn-on', dlE === 1);
-
-      dlQSpan.textContent  = dlQ;
-      dlQSpan.className    = 'try-val ' + (dlQ    ? 'o1' : 'o0');
-      dlQbSpan.textContent = dlQBar;
-      dlQbSpan.className   = 'try-val ' + (dlQBar ? 'o1' : 'o0');
-
-      dlStateLbl.textContent = stateText;
-
-      dlRows.forEach(row => {
-        row.classList.toggle('row-active', row.dataset.dl === stateKey);
-      });
+    // ── LED Display interactive ──
+    const ledBtnR         = document.getElementById('led-btn-r');
+    const ledBtnG         = document.getElementById('led-btn-g');
+    const ledBtnB         = document.getElementById('led-btn-b');
+    const ledBtnActivate  = document.getElementById('led-btn-act');
+    const ledScreenEl     = document.getElementById('led-screen');
+    const ledColorNameEl  = document.getElementById('led-color-name');
+    const ledTableRows    = document.querySelectorAll('#led-display tbody tr');
+    let ledSwitchR = 0, ledSwitchG = 0, ledSwitchB = 0, ledSwitchActivate = 0;
+    const LED_COLOR_NAMES = { '000':'Off (Black)','100':'Red','010':'Green','001':'Blue','110':'Yellow','101':'Magenta','011':'Cyan','111':'White' };
+    const LED_COLOR_HEX   = { '000':'#000000','100':'#ff0000','010':'#00ff00','001':'#0000ff','110':'#ffff00','101':'#ff00ff','011':'#00ffff','111':'#ffffff' };
+    function applyLedScreenOutput(outputR, outputG, outputB) {
+      const colorKey = `${outputR}${outputG}${outputB}`;
+      ledScreenEl.style.backgroundColor = LED_COLOR_HEX[colorKey]   || '#000000';
+      ledColorNameEl.textContent         = LED_COLOR_NAMES[colorKey] || 'Unknown';
+      ledTableRows.forEach(row => row.classList.toggle('row-active', row.dataset.led === colorKey));
     }
-
-    dlBtnD.addEventListener('click', () => { dlD ^= 1; refreshDLatch(); });
-    dlBtnE.addEventListener('click', () => { dlE ^= 1; refreshDLatch(); });
-    refreshDLatch();
-
-    // ── D Flip-Flop interactive ──
-    const dffBtnD     = document.getElementById('dff-btn-d');
-    const dffBtnCLK   = document.getElementById('dff-btn-clk');
-    const dffQSpan    = document.getElementById('dff-q');
-    const dffStateLbl = document.getElementById('dff-state-lbl');
-    const dffRows     = document.querySelectorAll('#d-flip-flop tbody tr');
-    let dffD = 0, dffCLK = 0, dffPrevCLK = 0, dffQ = 0;
-
-    function refreshDFF() {
-      const risingEdge = dffCLK === 1 && dffPrevCLK === 0;
-      if (risingEdge) dffQ = dffD;
-      dffPrevCLK = dffCLK;
-
-      const rowKey   = risingEdge ? ('r' + dffQ) : 'hold';
-      const stateText = risingEdge ? 'Captured' : 'Hold';
-
-      dffBtnD.textContent   = 'D = '   + dffD;
-      dffBtnCLK.textContent = 'CLK = ' + dffCLK;
-      dffBtnD.classList.toggle('btn-on',   dffD   === 1);
-      dffBtnCLK.classList.toggle('btn-on', dffCLK === 1);
-
-      dffQSpan.textContent = dffQ;
-      dffQSpan.className   = 'try-val ' + (dffQ ? 'o1' : 'o0');
-
-      dffStateLbl.textContent = stateText;
-
-      dffRows.forEach(row => {
-        row.classList.toggle('row-active', row.dataset.dff === rowKey);
-      });
+    function triggerLedUpdate() {
+      const andOutputR = ledSwitchR & ledSwitchActivate;
+      const andOutputG = ledSwitchG & ledSwitchActivate;
+      const andOutputB = ledSwitchB & ledSwitchActivate;
+      setTimeout(() => applyLedScreenOutput(andOutputR, andOutputG, andOutputB), 200);
     }
+    function refreshLedSwitchButtons() {
+      ledBtnR.textContent        = `R = ${ledSwitchR}`;
+      ledBtnG.textContent        = `G = ${ledSwitchG}`;
+      ledBtnB.textContent        = `B = ${ledSwitchB}`;
+      ledBtnActivate.textContent = `Activate = ${ledSwitchActivate}`;
+      ledBtnR.classList.toggle('btn-on',        ledSwitchR        === 1);
+      ledBtnG.classList.toggle('btn-on',        ledSwitchG        === 1);
+      ledBtnB.classList.toggle('btn-on',        ledSwitchB        === 1);
+      ledBtnActivate.classList.toggle('btn-on', ledSwitchActivate === 1);
+      triggerLedUpdate();
+    }
+    ledBtnR.addEventListener('click',        () => { ledSwitchR        ^= 1; refreshLedSwitchButtons(); });
+    ledBtnG.addEventListener('click',        () => { ledSwitchG        ^= 1; refreshLedSwitchButtons(); });
+    ledBtnB.addEventListener('click',        () => { ledSwitchB        ^= 1; refreshLedSwitchButtons(); });
+    ledBtnActivate.addEventListener('click', () => { ledSwitchActivate ^= 1; refreshLedSwitchButtons(); });
+    refreshLedSwitchButtons();
 
-    dffBtnD.addEventListener('click',   () => { dffD   ^= 1; refreshDFF(); });
-    dffBtnCLK.addEventListener('click', () => { dffCLK ^= 1; refreshDFF(); });
-    refreshDFF();
-  
   </script>
 
 </body>
