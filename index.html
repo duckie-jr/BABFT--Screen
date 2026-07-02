@@ -8,6 +8,21 @@
 </head>
 <body>
 
+  <nav class="site-nav" aria-label="Page sections">
+    <a href="#" class="nav-logo">BaBFT<span class="nav-logo-accent"> Gates</span></a>
+    <ul class="nav-links">
+      <li><a href="#gates">Gates</a></li>
+      <li><a href="#combining">Combining</a></li>
+      <li><a href="#clock">Clock</a></li>
+      <li><a href="#half-adder">Half Adder</a></li>
+      <li><a href="#decoder">Decoder</a></li>
+      <li><a href="#sr-latch">SR Latch</a></li>
+      <li><a href="#mux">MUX</a></li>
+      <li><a href="#full-adder">Full Adder</a></li>
+      <li><a href="#led-display">LED</a></li>
+    </ul>
+  </nav>
+
   <main class="hero">
     <p class="hero-label">Build a Boat for Treasure</p>
 
@@ -1318,6 +1333,51 @@
     ledBtnB.addEventListener('click',        () => { ledSwitchB        ^= 1; refreshLedSwitchButtons(); });
     ledBtnActivate.addEventListener('click', () => { ledSwitchActivate ^= 1; refreshLedSwitchButtons(); });
     refreshLedSwitchButtons();
+
+    // ── Sticky nav: highlight active section via IntersectionObserver ──
+    const allPageSections  = document.querySelectorAll('section[id]');
+    const allNavLinks      = document.querySelectorAll('.nav-links a');
+    const navLinksScroller = document.querySelector('.nav-links');
+    const visibleSectionIds = new Set();
+
+    const navSectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            visibleSectionIds.add(entry.target.id);
+          } else {
+            visibleSectionIds.delete(entry.target.id);
+          }
+        });
+
+        // Always highlight the first visible section in DOM order
+        let firstVisibleSectionId = null;
+        allPageSections.forEach(section => {
+          if (firstVisibleSectionId === null && visibleSectionIds.has(section.id)) {
+            firstVisibleSectionId = section.id;
+          }
+        });
+
+        allNavLinks.forEach(link => {
+          const isActive = link.getAttribute('href') === `#${firstVisibleSectionId}`;
+          link.classList.toggle('nav-active', isActive);
+
+          // Scroll the nav list so the active link stays centred (mobile)
+          if (isActive) {
+            const linkCenter = link.offsetLeft + link.offsetWidth / 2;
+            navLinksScroller.scrollTo({
+              left: linkCenter - navLinksScroller.offsetWidth / 2,
+              behavior: 'smooth',
+            });
+          }
+        });
+      },
+      // Top margin accounts for the 44px fixed nav; bottom margin keeps only
+      // the section occupying the upper portion of the viewport as "active"
+      { rootMargin: '-44px 0px -50% 0px', threshold: 0 }
+    );
+
+    allPageSections.forEach(section => navSectionObserver.observe(section));
 
   </script>
 
